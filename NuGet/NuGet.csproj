@@ -25,5 +25,11 @@
       <Name>Fody</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Tools Include="ConfigureDisguise.psm1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Tools Include="init.ps1" />
+  </ItemGroup>
   <Import Project="$(SolutionDir)\tools\NuGetBuild.targets" />
 </Project>
