@@ -43,6 +43,7 @@
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
     <Compile Include="Obfuscator.cs" />
+    <Compile Include="Tasks\StringEncryptionTask.cs" />
     <Compile Include="Tasks\SupressIldasmTask.cs" />
   </ItemGroup>
   <ItemGroup>

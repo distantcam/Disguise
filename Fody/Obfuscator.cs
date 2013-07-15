@@ -16,5 +16,8 @@ public class Obfuscator
     {
         if (config.SupressILdasm)
             SuppressIldasmTask.RunTask(moduleDefinition);
+
+        if (config.EncryptStrings)
+            StringEncryptionTask.RunTask(moduleDefinition);
     }
 }

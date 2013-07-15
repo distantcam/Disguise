@@ -23,6 +23,12 @@ public class Config
         set { SetBool("SupressILdasm", value); }
     }
 
+    public bool EncryptStrings
+    {
+        get { return GetBool("EncryptStrings"); }
+        set { SetBool("EncryptStrings", value); }
+    }
+
     public XElement ToXml { get { return xml; } }
 
     private bool GetBool(XName name, bool dfault = true)
