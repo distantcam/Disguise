@@ -7,7 +7,7 @@
     <ProjectGuid>{4B08D9A0-6C9E-4E80-AFB2-A2068FF6ED11}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Disguise.Fody</RootNamespace>
+    <RootNamespace>Disguise</RootNamespace>
     <AssemblyName>Disguise.Fody</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -39,8 +39,11 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Config.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
+    <Compile Include="Obfuscator.cs" />
+    <Compile Include="Tasks\SupressIldasmTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Anotar.Custom">
@@ -60,6 +63,8 @@
       <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Fody.targets" />
@@ -68,6 +73,7 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Tools\Pepita\PepitaGet.targets" />
   <Import Project="Fody.targets" />

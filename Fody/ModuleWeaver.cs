@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Xml.Linq;
 using Mono.Cecil;
 
 public class ModuleWeaver
@@ -10,6 +11,8 @@ public class ModuleWeaver
     public ModuleDefinition ModuleDefinition { get; set; }
     public IAssemblyResolver AssemblyResolver { get; set; }
     public string[] DefineConstants { get; set; }
+
+    public XElement Config { get; set; }
 
     public ModuleWeaver()
     {
@@ -24,5 +27,8 @@ public class ModuleWeaver
         LoggerFactory.LogInfo = LogInfo;
         LoggerFactory.LogWarn = LogWarning;
         LoggerFactory.LogError = LogError;
+
+        var obfuscator = new Obfuscator(new Config(Config));
+        obfuscator.Process(ModuleDefinition);
     }
 }
