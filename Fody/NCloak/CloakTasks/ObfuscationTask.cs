@@ -1,4 +1,5 @@
 ﻿using System;
+using Anotar.Custom;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -92,7 +93,6 @@ namespace TiviT.NCloak.CloakTasks
                             if (typeMapping.HasFieldMapping(fieldDefinition))
                                 fieldDefinition.Name = typeMapping.GetObfuscatedFieldName(fieldDefinition);
                         }
-
                     }
                 }
             }
@@ -110,15 +110,13 @@ namespace TiviT.NCloak.CloakTasks
                         case "call":
                         case "callvirt":
                         case "newobj":
-#if DEBUG
-                            OutputHelper.WriteLine("Discovered {0} {1} ({2})", instruction.OpCode.Name, instruction.Operand, instruction.Operand.GetType().Name);
-#endif
+                            Log.Debug("Discovered {0} {1} ({2})", instruction.OpCode.Name, instruction.Operand, instruction.Operand.GetType().Name);
 
                             //Look at the operand
-                            if (instruction.Operand is GenericInstanceMethod) //We do this one first due to inheritance 
+                            if (instruction.Operand is GenericInstanceMethod) //We do this one first due to inheritance
                             {
                                 GenericInstanceMethod genericInstanceMethod =
-                                    (GenericInstanceMethod) instruction.Operand;
+                                    (GenericInstanceMethod)instruction.Operand;
                                 //Update the standard naming
                                 UpdateMemberTypeReferences(context, genericInstanceMethod);
                                 //Update the generic types
@@ -133,11 +131,10 @@ namespace TiviT.NCloak.CloakTasks
                             }
 
                             break;
+
                         case "stfld":
                         case "ldfld":
-#if DEBUG
-                            OutputHelper.WriteLine("Discovered {0} {1} ({2})", instruction.OpCode.Name, instruction.Operand, instruction.Operand.GetType().Name);
-#endif
+                            Log.Debug("Discovered {0} {1} ({2})", instruction.OpCode.Name, instruction.Operand, instruction.Operand.GetType().Name);
                             //Look at the operand
                             FieldReference fieldReference = instruction.Operand as FieldReference;
                             if (fieldReference != null)
@@ -160,7 +157,7 @@ namespace TiviT.NCloak.CloakTasks
             //Get the assembly for this
             if (methodType.Scope is AssemblyNameReference)
             {
-                string assemblyName = ((AssemblyNameReference) methodType.Scope).FullName;
+                string assemblyName = ((AssemblyNameReference)methodType.Scope).FullName;
                 //Check if this needs to be updated
                 if (context.MappingGraph.IsAssemblyMappingDefined(assemblyName))
                 {
@@ -184,13 +181,13 @@ namespace TiviT.NCloak.CloakTasks
                     }
                     else if (memberReference is FieldReference)
                     {
-                        FieldReference fr = (FieldReference) memberReference;
+                        FieldReference fr = (FieldReference)memberReference;
                         if (t.HasFieldMapping(fr))
                             memberReference.Name = t.GetObfuscatedFieldName(fr);
                     }
                     else if (memberReference is MethodReference) //Is this ever used?? Used to be just an else without if
                     {
-                        MethodReference mr = (MethodReference) memberReference;
+                        MethodReference mr = (MethodReference)memberReference;
                         //Update the method name also if available
                         if (t.HasMethodMapping(mr))
                             memberReference.Name = t.GetObfuscatedMethodName(mr);

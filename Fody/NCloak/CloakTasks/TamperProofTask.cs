@@ -4,18 +4,20 @@
 //#define OUTPUT_PRE_TAMPER
 #endif
 #define USE_APPDOMAIN
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using Anotar.Custom;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using System.Text;
-using FieldAttributes=Mono.Cecil.FieldAttributes;
-using MethodAttributes=Mono.Cecil.MethodAttributes;
-using TypeAttributes=Mono.Cecil.TypeAttributes;
-using System.Threading;
+using FieldAttributes = Mono.Cecil.FieldAttributes;
+using MethodAttributes = Mono.Cecil.MethodAttributes;
+using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 namespace TiviT.NCloak.CloakTasks
 {
@@ -51,7 +53,7 @@ namespace TiviT.NCloak.CloakTasks
             //       It then checks the hash of the bytes and if successful, loads the bytes into the current AppDomain.
             //
 
-            //So getting down to business... the first think we need to do is go through each assembly and 
+            //So getting down to business... the first think we need to do is go through each assembly and
             //encrypt using Symmetric encryption
             //Lets generate a password
             string passwordKey = Guid.NewGuid().ToString();
@@ -87,7 +89,7 @@ namespace TiviT.NCloak.CloakTasks
 
             //Now we've got that information - it's up to us to generate a bootstrapper assembly
             //We'll do this by starting from scratch
-            
+
             AssemblyDefinition bootstrapperAssembly =
                 AssemblyDefinition.CreateAssembly(new AssemblyNameDefinition(context.Settings.TamperProofAssemblyName, new Version(1, 0)), null,
                 context.Settings.TamperProofAssemblyType == AssemblyType.Windows ? ModuleKind.Windows : ModuleKind.Console);
@@ -135,7 +137,7 @@ namespace TiviT.NCloak.CloakTasks
 
             //Finally save this assembly to our output path
             string outputPath = Path.Combine(context.Settings.OutputDirectory, context.Settings.TamperProofAssemblyName + ".exe");
-            OutputHelper.WriteLine("Outputting assembly to {0}", outputPath);
+            Log.Information("Outputting assembly to {0}", outputPath);
             bootstrapperAssembly.Write(outputPath);
         }
 
@@ -184,7 +186,7 @@ namespace TiviT.NCloak.CloakTasks
             var assembliesLoaded = new FieldDefinition(assembliesLoadedVariableName, FieldAttributes.Private, assembly.Import(typeof(bool)));
             var assemblyLock = new FieldDefinition(assemblyLockVariableName, FieldAttributes.Private | FieldAttributes.InitOnly, assembly.Import(typeof(object)));
             var executingAssembly = new FieldDefinition(executingAssemblyVariableName, FieldAttributes.Private | FieldAttributes.InitOnly, assembly.Import(typeof(Assembly)));
-            var loadedAssemblies = new FieldDefinition(loadedAssembliesVariableName,FieldAttributes.Private | FieldAttributes.InitOnly, assembly.Import(typeof(Dictionary<string, Assembly>)));
+            var loadedAssemblies = new FieldDefinition(loadedAssembliesVariableName, FieldAttributes.Private | FieldAttributes.InitOnly, assembly.Import(typeof(Dictionary<string, Assembly>)));
             programType.Fields.Add(assembliesLoaded);
             programType.Fields.Add(assemblyLock);
             programType.Fields.Add(executingAssembly);
@@ -250,7 +252,7 @@ namespace TiviT.NCloak.CloakTasks
             ctor.MaxStackSize = 8;
             var il = ctor.GetILProcessor();
             InjectAntiReflectorCode(il, il.Create(OpCodes.Ldarg_0));
-            var objectCtor = assembly.Import(typeof (object).GetConstructor(Type.EmptyTypes));
+            var objectCtor = assembly.Import(typeof(object).GetConstructor(Type.EmptyTypes));
             il.Append(il.Create(OpCodes.Call, objectCtor));
             il.Append(OpCodes.Ret);
 
@@ -278,9 +280,9 @@ namespace TiviT.NCloak.CloakTasks
 #endif
             method.Body.InitLocals = true;
             method.Body.MaxStackSize = 2;
-            method.AddLocal(assembly, typeof (string)); //Resource name
-            method.AddLocal(assembly, typeof (string[])); //Foreach temp
-            method.AddLocal(assembly, typeof (int)); //Loop counter
+            method.AddLocal(assembly, typeof(string)); //Resource name
+            method.AddLocal(assembly, typeof(string[])); //Foreach temp
+            method.AddLocal(assembly, typeof(int)); //Loop counter
             method.AddLocal(assembly, typeof(bool));
 
             //Build the body
@@ -291,7 +293,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Ldfld, executingAssembly));
 
             //Get the resources - foreach get's converted to a standard loop
-            var resourcesMethod = typeof (Assembly).GetMethod("GetManifestResourceNames");
+            var resourcesMethod = typeof(Assembly).GetMethod("GetManifestResourceNames");
             il.Append(il.Create(OpCodes.Callvirt, assembly.Import(resourcesMethod)));
             il.Append(OpCodes.Stloc_1);
 
@@ -314,14 +316,14 @@ namespace TiviT.NCloak.CloakTasks
 
             //Make sure it doesn't end with .v0 or .e
             il.Append(il.Create(OpCodes.Ldstr, ".v0"));
-            var endsWith = assembly.Import(typeof (String).GetMethod("EndsWith", new[] {typeof (string)}));
+            var endsWith = assembly.Import(typeof(String).GetMethod("EndsWith", new[] { typeof(string) }));
             il.Append(il.Create(OpCodes.Callvirt, endsWith));
 
             //Jump out as need be
             var load0 = il.Create(OpCodes.Ldc_I4_0);
             il.Append(il.Create(OpCodes.Brtrue_S, load0));
             il.Append(OpCodes.Ldloc_0);
-            
+
             //Check the .e
             il.Append(il.Create(OpCodes.Ldstr, ".e"));
             il.Append(il.Create(OpCodes.Callvirt, endsWith));
@@ -343,7 +345,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Call, loadAssembly));
             il.Append(OpCodes.Pop);
             il.Append(OpCodes.Nop);
-            
+
             //Loop counter
             il.Append(loadLoopCounter);
             il.Append(OpCodes.Ldc_I4_1);
@@ -416,7 +418,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(OpCodes.Ldarg_0);
             il.Append(il.Create(OpCodes.Ldfld, loadedAssemblies));
             il.Append(OpCodes.Ldarg_1);
-            var containsKey = typeof (Dictionary<string, Assembly>).GetMethod("ContainsKey");
+            var containsKey = typeof(Dictionary<string, Assembly>).GetMethod("ContainsKey");
             il.Append(il.Create(OpCodes.Callvirt, assembly.Import(containsKey)));
             il.Append(OpCodes.Ldc_I4_0);
             il.Append(OpCodes.Ceq);
@@ -425,13 +427,13 @@ namespace TiviT.NCloak.CloakTasks
             //Jump if we don't have it, other wise return it
             var startFindType = il.Create(OpCodes.Ldarg_0);
             il.Append(il.Create(OpCodes.Brtrue_S, startFindType));
-            
+
             //Otherwise return the cached assembly
             il.Append(OpCodes.Ldarg_0);
             il.Append(il.Create(OpCodes.Ldfld, loadedAssemblies));
             il.Append(OpCodes.Ldarg_1);
             //We are retrieving the name item
-            var getItem = typeof (Dictionary<string, Assembly>).GetProperty("Item");
+            var getItem = typeof(Dictionary<string, Assembly>).GetProperty("Item");
             il.Append(il.Create(OpCodes.Callvirt, assembly.Import(getItem.GetGetMethod())));
             //Store the variable in our return arg
             il.Append(il.Create(OpCodes.Stloc_S, tempAssembly));
@@ -446,10 +448,10 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(OpCodes.Ldarg_1);
             il.Append(il.Create(OpCodes.Ldstr, ".v0"));
             //Concat the arg1 (resourceName) and v0
-            var concat = assembly.Import(typeof (String).GetMethod("Concat", new[] {typeof (string), typeof (string)}));
+            var concat = assembly.Import(typeof(String).GetMethod("Concat", new[] { typeof(string), typeof(string) }));
             il.Append(il.Create(OpCodes.Call, concat));
             //Now get this from the manifest
-            var getManifest = assembly.Import(typeof (Assembly).GetMethod("GetManifestResourceStream", new[] {typeof (string)}));
+            var getManifest = assembly.Import(typeof(Assembly).GetMethod("GetManifestResourceStream", new[] { typeof(string) }));
             il.Append(il.Create(OpCodes.Callvirt, getManifest));
             //Store the result in our temp local
             il.Append(OpCodes.Stloc_1);
@@ -467,13 +469,13 @@ namespace TiviT.NCloak.CloakTasks
             var startDeclareArray = il.Create(OpCodes.Ldloc_1);
             il.Append(il.Create(OpCodes.Brtrue_S, startDeclareArray));
             //Load null into our return variable
-            il.Append(OpCodes.Ldnull); 
+            il.Append(OpCodes.Ldnull);
             il.Append(il.Create(OpCodes.Stloc_S, tempAssembly));
             //Jump to the return routine
             il.Append(il.Create(OpCodes.Leave, returnSequence)); //Leave as in try
             //Carry on and declare a buffer
             il.Append(startDeclareArray);
-            var getLength = assembly.Import(typeof (Stream).GetProperty("Length").GetGetMethod());
+            var getLength = assembly.Import(typeof(Stream).GetProperty("Length").GetGetMethod());
             il.Append(il.Create(OpCodes.Callvirt, getLength));
             il.Append(OpCodes.Conv_Ovf_I);
             il.Append(il.Create(OpCodes.Newarr, assembly.Import(typeof(byte))));
@@ -486,23 +488,23 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(OpCodes.Ldlen);
             il.Append(OpCodes.Conv_I4);
             var readMethod =
-                assembly.Import(typeof (Stream).GetMethod("Read", new[] {typeof (byte[]), typeof (int), typeof (int)}));
+                assembly.Import(typeof(Stream).GetMethod("Read", new[] { typeof(byte[]), typeof(int), typeof(int) }));
             il.Append(il.Create(OpCodes.Callvirt, readMethod));
 
             //Get the result
             il.Append(OpCodes.Pop);
             il.Append(OpCodes.Ldloc_2);
             //Convert it to base 64
-            var base64String = assembly.Import(typeof (Convert).GetMethod("ToBase64String", new[] {typeof (byte[])}));
+            var base64String = assembly.Import(typeof(Convert).GetMethod("ToBase64String", new[] { typeof(byte[]) }));
             il.Append(il.Create(OpCodes.Call, base64String));
             //Get the result
             il.Append(OpCodes.Stloc_0);
             il.Append(OpCodes.Nop);
-            
+
             //Read the assembly
             var startReadAssembly = il.Create(OpCodes.Nop);
             il.Append(il.Create(OpCodes.Leave_S, startReadAssembly));
-            
+
             //Dispose of appropriately
             var try1End = il.Create(OpCodes.Ldloc_1);
             il.Append(try1End);
@@ -514,11 +516,11 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Brtrue_S, endFinally1));
             il.Append(OpCodes.Ldloc_1);
             //Dispose
-            var disposeMethod = assembly.Import(typeof (IDisposable).GetMethod("Dispose"));
+            var disposeMethod = assembly.Import(typeof(IDisposable).GetMethod("Dispose"));
             il.Append(il.Create(OpCodes.Callvirt, disposeMethod));
             il.Append(OpCodes.Nop);
             il.Append(endFinally1);
-            
+
             //Start the read assembly
             il.Append(startReadAssembly);
             il.Append(OpCodes.Ldarg_0);
@@ -572,7 +574,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Brtrue_S, endFinally2));
             il.Append(OpCodes.Ldloc_1);
             //Dispose
-            il.Append(il.Create(OpCodes.Callvirt, disposeMethod)); 
+            il.Append(il.Create(OpCodes.Callvirt, disposeMethod));
             il.Append(OpCodes.Nop);
             il.Append(endFinally2);
             il.Append(startCheck);
@@ -580,14 +582,14 @@ namespace TiviT.NCloak.CloakTasks
             //We need to load in both the salt, and the password key
             il.Append(il.Create(OpCodes.Ldstr, passwordKey));
             il.Append(il.Create(OpCodes.Ldstr, Convert.ToBase64String(salt.ToByteArray())));
-            var fromBase64String = assembly.Import(typeof (Convert).GetMethod("FromBase64String"));
+            var fromBase64String = assembly.Import(typeof(Convert).GetMethod("FromBase64String"));
             il.Append(il.Create(OpCodes.Call, fromBase64String));
             //Set these into an rfc 2898 object
             il.Append(OpCodes.Ldc_I4_2);
             //RFC2898 ctor
             var rfcCtor =
                 assembly.Import(
-                    typeof (Rfc2898DeriveBytes).GetConstructor(new[] {typeof (string), typeof (byte[]), typeof (int)}));
+                    typeof(Rfc2898DeriveBytes).GetConstructor(new[] { typeof(string), typeof(byte[]), typeof(int) }));
             il.Append(il.Create(OpCodes.Newobj, rfcCtor));
             //Store this object
             il.Append(il.Create(OpCodes.Stloc_S, password));
@@ -595,7 +597,7 @@ namespace TiviT.NCloak.CloakTasks
             //Get the key bytes
             il.Append(il.Create(OpCodes.Ldloc_S, password));
             il.Append(il.Create(OpCodes.Ldc_I4_S, (sbyte)0x20));
-            var getBytes = assembly.Import(typeof (DeriveBytes).GetMethod("GetBytes", new[] {typeof (int)}));
+            var getBytes = assembly.Import(typeof(DeriveBytes).GetMethod("GetBytes", new[] { typeof(int) }));
             il.Append(il.Create(OpCodes.Callvirt, getBytes));
             il.Append(il.Create(OpCodes.Stloc_S, keyBytes));
 
@@ -618,7 +620,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Call, hashData));
             //Run the inequality operator
             var inequality =
-                assembly.Import(typeof (String).GetMethod("op_Inequality", new[] {typeof (string), typeof (string)}));
+                assembly.Import(typeof(String).GetMethod("op_Inequality", new[] { typeof(string), typeof(string) }));
             il.Append(il.Create(OpCodes.Call, inequality));
             il.Append(OpCodes.Ldc_I4_0);
             il.Append(OpCodes.Ceq);
@@ -633,10 +635,10 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Br_S, returnSequence));
             il.Append(startLoadAssembly);
 
-            var assemblyLoad = assembly.Import(typeof (Assembly).GetMethod("Load", new[] {typeof (byte[])}));
+            var assemblyLoad = assembly.Import(typeof(Assembly).GetMethod("Load", new[] { typeof(byte[]) }));
             il.Append(il.Create(OpCodes.Call, assemblyLoad));
             il.Append(il.Create(OpCodes.Stloc_S, actualAssembly));
-            
+
             //Check if it is null
             il.Append(il.Create(OpCodes.Ldloc_S, actualAssembly));
             il.Append(OpCodes.Ldnull);
@@ -656,7 +658,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Ldfld, loadedAssemblies));
             il.Append(OpCodes.Ldarg_1);
             il.Append(il.Create(OpCodes.Ldloc_S, actualAssembly));
-            var addMethod = assembly.Import(typeof (Dictionary<string, Assembly>).GetMethod("Add"));            
+            var addMethod = assembly.Import(typeof(Dictionary<string, Assembly>).GetMethod("Add"));
             il.Append(il.Create(OpCodes.Callvirt, addMethod));
             il.Append(OpCodes.Nop);
             //Move it to our temp return var
@@ -717,7 +719,7 @@ namespace TiviT.NCloak.CloakTasks
             //Declare the resource parameter
             method.Parameters.Add(new ParameterDefinition(assembly.Import(typeof(string))));
             method.Parameters.Add(new ParameterDefinition(assembly.Import(typeof(string))));
-            
+
             method.Body.InitLocals = true;
             method.Body.MaxStackSize = 2;
             method.AddLocal(assembly, typeof(Assembly)); //Assembly
@@ -754,7 +756,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Br_S, returnType));
             il.Append(getType);
             il.Append(OpCodes.Ldarg_2);
-            var getTypeMethod = typeof (Assembly).GetMethod("GetType", new[] {typeof (string)});
+            var getTypeMethod = typeof(Assembly).GetMethod("GetType", new[] { typeof(string) });
             il.Append(il.Create(OpCodes.Callvirt, assembly.Import(getTypeMethod)));
             il.Append(OpCodes.Stloc_1);
             il.Append(il.Create(OpCodes.Br_S, returnType));
@@ -820,7 +822,7 @@ namespace TiviT.NCloak.CloakTasks
         /// <returns></returns>
         private static MethodDefinition BuildDecryptMethod(ICloakContext context, AssemblyDefinition assembly)
         {
-            var byteArrayType = assembly.Import(typeof (byte[]));
+            var byteArrayType = assembly.Import(typeof(byte[]));
 #if USE_FRIENDLY_NAMING
             MethodDefinition method = new MethodDefinition("DecryptData",
                                                            MethodAttributes.Private | MethodAttributes.HideBySig |
@@ -874,7 +876,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(OpCodes.Ldarg_0);
 
             //New memory stream
-            var memoryStreamCtor = typeof(MemoryStream).GetConstructor(new [] { typeof(byte[]) });
+            var memoryStreamCtor = typeof(MemoryStream).GetConstructor(new[] { typeof(byte[]) });
             il.Append(il.Create(OpCodes.Newobj, assembly.Import(memoryStreamCtor)));
             il.Append(OpCodes.Stloc_2);
             var startOfSecondTry = il.Create(OpCodes.Nop);
@@ -1031,17 +1033,17 @@ namespace TiviT.NCloak.CloakTasks
             //Declare the resource parameter
             method.Parameters.Add(new ParameterDefinition("sender", Mono.Cecil.ParameterAttributes.None, assembly.Import(typeof(object))));
             method.Parameters.Add(new ParameterDefinition(assembly.Import(typeof(ResolveEventArgs))));
-            
+
             method.Body.InitLocals = true;
             method.Body.MaxStackSize = 2;
             method.AddLocal(assembly, typeof(Assembly[])); //currentAssemblies
             method.AddLocal(assembly, typeof(Assembly));   //a
             method.AddLocal(assembly, typeof(Assembly));   //temp assembly
-            method.AddLocal(assembly, typeof (object));    //temp object
-            var tempBool = method.AddLocal(assembly, typeof (bool)); //temp bool
+            method.AddLocal(assembly, typeof(object));    //temp object
+            var tempBool = method.AddLocal(assembly, typeof(bool)); //temp bool
             var tempAssemblyArray = method.AddLocal(assembly, typeof(Assembly[])); //temp assembly array
-            var tempInt = method.AddLocal(assembly, typeof (int)); //temp int
-        
+            var tempInt = method.AddLocal(assembly, typeof(int)); //temp int
+
             //Get the il builder
             var il = method.Body.GetILProcessor();
 
@@ -1056,7 +1058,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Ldfld, assemblyLock));
             il.Append(OpCodes.Dup);
             il.Append(OpCodes.Stloc_3);
-            var monitorEnter = assembly.Import(typeof (Monitor).GetMethod("Enter", new[] {typeof (object)}));
+            var monitorEnter = assembly.Import(typeof(Monitor).GetMethod("Enter", new[] { typeof(object) }));
             il.Append(il.Create(OpCodes.Call, monitorEnter));
             il.Append(OpCodes.Nop);
             var tryStart = il.Create(OpCodes.Nop);
@@ -1086,16 +1088,16 @@ namespace TiviT.NCloak.CloakTasks
             //We're in the finally now
             var finallyStart = il.Create(OpCodes.Ldloc_3);
             il.Append(finallyStart);
-            var monitorExit = assembly.Import(typeof (Monitor).GetMethod("Exit", new[] {typeof (object)}));
+            var monitorExit = assembly.Import(typeof(Monitor).GetMethod("Exit", new[] { typeof(object) }));
             il.Append(il.Create(OpCodes.Call, monitorExit));
             il.Append(OpCodes.Nop);
             il.Append(OpCodes.Endfinally);
             il.Append(afterFinally);
 
             //Get the current domains assemblies
-            var currentDomain = assembly.Import(typeof (AppDomain).GetProperty("CurrentDomain").GetGetMethod());
+            var currentDomain = assembly.Import(typeof(AppDomain).GetProperty("CurrentDomain").GetGetMethod());
             il.Append(il.Create(OpCodes.Call, currentDomain));
-            var getAssemblies = assembly.Import(typeof (AppDomain).GetMethod("GetAssemblies"));
+            var getAssemblies = assembly.Import(typeof(AppDomain).GetMethod("GetAssemblies"));
             il.Append(il.Create(OpCodes.Callvirt, getAssemblies));
             il.Append(OpCodes.Stloc_0);
             il.Append(OpCodes.Nop);
@@ -1118,14 +1120,14 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(OpCodes.Ldloc_1);
 
             //Check the name
-            var getFullName = assembly.Import(typeof (Assembly).GetProperty("FullName").GetGetMethod());
+            var getFullName = assembly.Import(typeof(Assembly).GetProperty("FullName").GetGetMethod());
             il.Append(il.Create(OpCodes.Callvirt, getFullName));
             il.Append(OpCodes.Ldarg_2);
-            var getName = assembly.Import(typeof (ResolveEventArgs).GetProperty("Name").GetGetMethod());
+            var getName = assembly.Import(typeof(ResolveEventArgs).GetProperty("Name").GetGetMethod());
             il.Append(il.Create(OpCodes.Callvirt, getName));
             //Check if equal
             var stringEquality =
-                assembly.Import(typeof (String).GetMethod("op_Equality", new[] {typeof (string), typeof (string)}));
+                assembly.Import(typeof(String).GetMethod("op_Equality", new[] { typeof(string), typeof(string) }));
             il.Append(il.Create(OpCodes.Call, stringEquality));
             il.Append(OpCodes.Ldc_I4_0);
             il.Append(OpCodes.Ceq);
@@ -1170,7 +1172,7 @@ namespace TiviT.NCloak.CloakTasks
             finallyBlock.HandlerStart = finallyStart;
             finallyBlock.HandlerEnd = afterFinally;
             method.Body.ExceptionHandlers.Add(finallyBlock);
-            
+
             //Return the method
             return method;
         }
@@ -1205,7 +1207,7 @@ namespace TiviT.NCloak.CloakTasks
             var sr = method.AddLocal(assembly, typeof(StreamReader));   //sr
             var type = method.AddLocal(assembly, typeof(Type));   //type
             var methodInfo = method.AddLocal(assembly, typeof(MethodInfo));   //method
-            var tempStringArray = method.AddLocal(assembly, typeof (string[]));
+            var tempStringArray = method.AddLocal(assembly, typeof(string[]));
             var tempInt = method.AddLocal(assembly, typeof(int));
             var tempBool = method.AddLocal(assembly, typeof(bool));
 
@@ -1227,7 +1229,7 @@ namespace TiviT.NCloak.CloakTasks
 
             //We need to find the entry point so start a loop to find
             il.Append(il.Create(OpCodes.Ldfld, executingAssembly));
-            var getManifestResourceNames = assembly.Import(typeof (Assembly).GetMethod("GetManifestResourceNames"));
+            var getManifestResourceNames = assembly.Import(typeof(Assembly).GetMethod("GetManifestResourceNames"));
             il.Append(il.Create(OpCodes.Callvirt, getManifestResourceNames));
             il.Append(il.Create(OpCodes.Stloc_S, tempStringArray));
 
@@ -1249,9 +1251,9 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(OpCodes.Nop);
             il.Append(OpCodes.Ldloc_3);
             il.Append(il.Create(OpCodes.Ldstr, ".e"));
-            var endsWith = assembly.Import(typeof (String).GetMethod("EndsWith", new[] {typeof (string)}));
+            var endsWith = assembly.Import(typeof(String).GetMethod("EndsWith", new[] { typeof(string) }));
             il.Append(il.Create(OpCodes.Callvirt, endsWith));
-            il.Append(OpCodes.Ldc_I4_0); 
+            il.Append(OpCodes.Ldc_I4_0);
             il.Append(OpCodes.Ceq);
             il.Append(il.Create(OpCodes.Stloc_S, tempBool));
             il.Append(il.Create(OpCodes.Ldloc_S, tempBool));
@@ -1265,7 +1267,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Ldfld, executingAssembly));
             il.Append(OpCodes.Ldloc_3);
             var getManifestResourceStream =
-                assembly.Import(typeof (Assembly).GetMethod("GetManifestResourceStream", new[] {typeof (string)}));
+                assembly.Import(typeof(Assembly).GetMethod("GetManifestResourceStream", new[] { typeof(string) }));
             il.Append(il.Create(OpCodes.Callvirt, getManifestResourceStream));
             il.Append(il.Create(OpCodes.Stloc_S, s));
             //Make sure it's not null
@@ -1283,11 +1285,11 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Br_S, startIncrement2));
             il.Append(startUnpack);
             //It's all in unicode
-            var unicode = assembly.Import(typeof (Encoding).GetProperty("Unicode").GetGetMethod());
+            var unicode = assembly.Import(typeof(Encoding).GetProperty("Unicode").GetGetMethod());
             il.Append(il.Create(OpCodes.Call, unicode));
             //Create a new stream reader to read it
             var streamReaderCtor =
-                assembly.Import(typeof (StreamReader).GetConstructor(new[] {typeof (Stream), typeof (Encoding)}));
+                assembly.Import(typeof(StreamReader).GetConstructor(new[] { typeof(Stream), typeof(Encoding) }));
             il.Append(il.Create(OpCodes.Newobj, streamReaderCtor));
             il.Append(il.Create(OpCodes.Stloc_S, sr));
 
@@ -1299,7 +1301,7 @@ namespace TiviT.NCloak.CloakTasks
             //il.Append(il.Create(OpCodes.Ldstr, resourceNamespace + "."));
             il.Append(il.Create(OpCodes.Ldloc_S, sr));
             //Read in a line or two
-            var readLine = assembly.Import(typeof (TextReader).GetMethod("ReadLine"));
+            var readLine = assembly.Import(typeof(TextReader).GetMethod("ReadLine"));
             il.Append(il.Create(OpCodes.Callvirt, readLine));
             //Joing the strings
             //var stringConcat =
@@ -1335,7 +1337,7 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(il.Create(OpCodes.Brtrue_S, endFinally));
             il.Append(il.Create(OpCodes.Ldloc_S, sr));
             //dispose it
-            var dispose = assembly.Import(typeof (IDisposable).GetMethod("Dispose"));
+            var dispose = assembly.Import(typeof(IDisposable).GetMethod("Dispose"));
             il.Append(il.Create(OpCodes.Callvirt, dispose));
             il.Append(OpCodes.Nop);
             il.Append(endFinally);
@@ -1343,7 +1345,7 @@ namespace TiviT.NCloak.CloakTasks
 
             //Make sure nothing is null
             il.Append(OpCodes.Ldloc_0);
-            var isNullOrEmpty = assembly.Import(typeof (string).GetMethod("IsNullOrEmpty", new[] {typeof (string)}));
+            var isNullOrEmpty = assembly.Import(typeof(string).GetMethod("IsNullOrEmpty", new[] { typeof(string) }));
             il.Append(il.Create(OpCodes.Call, isNullOrEmpty));
             var exitCheck = il.Create(OpCodes.Ldc_I4_1);
             il.Append(il.Create(OpCodes.Brtrue_S, exitCheck));
@@ -1428,14 +1430,13 @@ namespace TiviT.NCloak.CloakTasks
             il.Append(OpCodes.Ldloc_2);
             il.Append(il.Create(OpCodes.Ldc_I4_S, (sbyte)0x38));
             var getMethod =
-                assembly.Import(typeof (Type).GetMethod("GetMethod", new[] {typeof (string), typeof (BindingFlags)}));
+                assembly.Import(typeof(Type).GetMethod("GetMethod", new[] { typeof(string), typeof(BindingFlags) }));
             il.Append(il.Create(OpCodes.Callvirt, getMethod));
             il.Append(il.Create(OpCodes.Stloc_S, methodInfo));
 #if VERBOSE_OUTPUT
             DebugLine(assembly, il, "Get Method has been called");
 #endif
 
-            
             //Check it isn't null
             il.Append(il.Create(OpCodes.Ldloc_S, methodInfo));
             il.Append(OpCodes.Ldnull);
@@ -1447,13 +1448,13 @@ namespace TiviT.NCloak.CloakTasks
             var invokeMethodBlock = il.Create(OpCodes.Ldloc_S, methodInfo);
             il.Append(il.Create(OpCodes.Brtrue_S, invokeMethodBlock));
             il.Append(il.Create(OpCodes.Br_S, ret));
-            
+
             //Invoke the method
             il.Append(invokeMethodBlock);
             il.Append(OpCodes.Ldnull);
             il.Append(OpCodes.Ldnull);
             var invoke =
-                assembly.Import(typeof (MethodBase).GetMethod("Invoke", new[] {typeof (object), typeof (object[])}));
+                assembly.Import(typeof(MethodBase).GetMethod("Invoke", new[] { typeof(object), typeof(object[]) }));
             il.Append(il.Create(OpCodes.Callvirt, invoke));
             il.Append(OpCodes.Pop);
 #if VERBOSE_OUTPUT
@@ -1690,7 +1691,7 @@ namespace TiviT.NCloak.CloakTasks
         /// <returns>A byte array of the encrypted data</returns>
         private static byte[] EncryptData(byte[] rawData, byte[] keyBytes, byte[] initVector)
         {
-            //Use Rijndael encryption 
+            //Use Rijndael encryption
             Rijndael symmetricAlgorithm = Rijndael.Create();
             symmetricAlgorithm.Mode = CipherMode.CBC;
 

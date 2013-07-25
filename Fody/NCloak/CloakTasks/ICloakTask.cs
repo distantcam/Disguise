@@ -7,6 +7,7 @@
         /// </summary>
         /// <value>The name.</value>
         string Name { get; }
+
         /// <summary>
         /// Runs the specified cloaking task.
         /// </summary>

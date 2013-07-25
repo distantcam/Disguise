@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using TiviT.NCloak.Mapping;
 using Mono.Cecil;
+using TiviT.NCloak.Mapping;
+
 namespace TiviT.NCloak
 {
     public interface ICloakContext

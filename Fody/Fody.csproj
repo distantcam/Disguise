@@ -39,12 +39,11 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CecilExtensions.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
     <Compile Include="NCloak\AssemblyType.cs" />
-    <Compile Include="NCloak\AttributeExtensions.cs" />
-    <Compile Include="NCloak\CecilExtensions.cs" />
     <Compile Include="NCloak\CharacterSet.cs" />
     <Compile Include="NCloak\CloakContext.cs" />
     <Compile Include="NCloak\CloakManager.cs" />
@@ -68,7 +67,6 @@
     <Compile Include="NCloak\Mapping\TypeMapping.cs" />
     <Compile Include="NCloak\NameManager.cs" />
     <Compile Include="NCloak\NamingTable.cs" />
-    <Compile Include="NCloak\OutputHelper.cs" />
     <Compile Include="NCloak\StringEncryptionMethod.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,8 @@
 ﻿#define VERBOSE
+
 using System;
 using System.Collections.Generic;
+using Anotar.Custom;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -45,7 +47,7 @@ namespace TiviT.NCloak.CloakTasks
         /// <param name="context">The running context of this cloak job.</param>
         public void RunTask(ICloakContext context)
         {
-            //Go through each assembly and encrypt the strings 
+            //Go through each assembly and encrypt the strings
             //for each assembly inject a decryption routine - we'll let the obfuscator hide it properly
             //Loop through each assembly and obfuscate it
             foreach (AssemblyDefinition definition in context.GetAssemblyDefinitions().Values)
@@ -64,7 +66,7 @@ namespace TiviT.NCloak.CloakTasks
             MethodReference decryptionMethod = null;
 
             //Generate a new type for decryption
-            OutputHelper.WriteLine("Generating global decrypt method");
+            Log.Information("Generating global decrypt method");
             foreach (TypeDefinition td in definition.MainModule.GetAllTypes())
                 if (td.Name == "<Module>")
                 {
@@ -85,6 +87,7 @@ namespace TiviT.NCloak.CloakTasks
                         case StringEncryptionMethod.Xor:
                             GenerateXorDecryptionMethod(definition, md.Body);
                             break;
+
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -94,7 +97,7 @@ namespace TiviT.NCloak.CloakTasks
                 }
 
             //Loop through the modules
-            OutputHelper.WriteLine("Processing modules");
+            Log.Information("Processing modules");
             foreach (ModuleDefinition moduleDefinition in definition.Modules)
             {
                 //Go through each type
@@ -105,7 +108,7 @@ namespace TiviT.NCloak.CloakTasks
                     {
                         if (methodDefinition.HasBody)
                         {
-                            OutputHelper.WriteMethod(typeDefinition, methodDefinition);
+                            Log.Information("> {0}.{1}.{2}", typeDefinition.Namespace, typeDefinition.Name, methodDefinition.Name);
                             ProcessInstructions(definition, methodDefinition.Body, decryptionMethod);
                         }
                     }
@@ -134,14 +137,14 @@ namespace TiviT.NCloak.CloakTasks
                 }
                 return new String(characters);
              */
-            
+
             //Declare a local to store the char array
             body.InitLocals = true;
             body.Method.AddLocal(typeof(char[]));
             body.Method.AddLocal(typeof(int));
             body.Method.AddLocal(typeof(string));
             body.Method.AddLocal(typeof(bool));
-            
+
             //Start with a nop
             worker.Append(worker.Create(OpCodes.Nop));
 
@@ -163,7 +166,7 @@ namespace TiviT.NCloak.CloakTasks
             worker.Append(worker.Create(OpCodes.Ldc_I4_0));
             Instruction stLoc1 = worker.Create(OpCodes.Stloc_1);
             worker.Append(stLoc1);
-            
+
             //We'll insert a br.s here later....
 
             //Insert another nop and do the rest of our loop
@@ -198,7 +201,7 @@ namespace TiviT.NCloak.CloakTasks
             //Return a new string
             worker.Append(worker.Create(OpCodes.Ldloc_0));
             //Find the constructor we want to use
-            MethodReference constructor = assembly.Import(typeof(string).GetConstructor(new [] { typeof(char[])}));
+            MethodReference constructor = assembly.Import(typeof(string).GetConstructor(new[] { typeof(char[]) }));
             constructor = body.ImportMethod(constructor);
             worker.Append(worker.Create(OpCodes.Newobj, constructor));
             Instruction stloc2 = worker.Create(OpCodes.Stloc_2);
@@ -250,7 +253,7 @@ namespace TiviT.NCloak.CloakTasks
                 int salt = random.Next(5000, 10000);
 
                 //Now we need to work out what the encrypted value is and set the operand
-                OutputHelper.WriteLine("Encrypting string \"{0}\"", originalValue);
+                Log.Information("Encrypting string \"{0}\"", originalValue);
                 string byteArray = EncryptString(originalValue, salt);
                 Instruction loadString = il.Create(OpCodes.Ldstr, byteArray);
                 il.Replace(instruction, loadString);

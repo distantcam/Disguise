@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using Anotar.Custom;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
-using MethodBody=Mono.Cecil.Cil.MethodBody;
-using System.Runtime.InteropServices;
+using MethodBody = Mono.Cecil.Cil.MethodBody;
 
 namespace TiviT.NCloak.CloakTasks
 {
@@ -56,6 +57,7 @@ namespace TiviT.NCloak.CloakTasks
                     case ConfusionMethod.InvalidIl:
                         ConfuseDecompilationWithInvalidIl(definition);
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -76,7 +78,7 @@ namespace TiviT.NCloak.CloakTasks
                 {
                     if (md.HasBody)
                     {
-                        OutputHelper.WriteMethod(td, md);
+                        Log.Information("> {0}.{1}.{2}", td.Namespace, td.Name, md.Name);
                         InsertInvalidIl(md.Body);
                     }
                 }
@@ -89,7 +91,6 @@ namespace TiviT.NCloak.CloakTasks
                         OutputHelper.WriteMethod(td, ci);
                         InsertInvalidIl(ci.Body);
                     }
-
                 }
                  */
             }
@@ -136,24 +137,31 @@ namespace TiviT.NCloak.CloakTasks
                 default:
                     op2 = 0xc1;
                     break;
+
                 case 1:
                     op2 = 0xae;
                     break;
+
                 case 2:
                     op2 = 0xc9;
                     break;
+
                 case 3:
                     op2 = 0xca;
                     break;
+
                 case 4:
                     op2 = 0xaf;
                     break;
+
                 case 5:
                     op2 = 0xa7;
                     break;
+
                 case 6:
                     op2 = 0xc0;
                     break;
+
                 case 7:
                     op2 = 0xbe;
                     break;
@@ -164,7 +172,7 @@ namespace TiviT.NCloak.CloakTasks
             try
             {
                 Marshal.StructureToPtr(invalidOpCode, ptr, false);
-                opCode = (OpCode) Marshal.PtrToStructure(ptr, typeof (OpCode));
+                opCode = (OpCode)Marshal.PtrToStructure(ptr, typeof(OpCode));
             }
             finally
             {
@@ -172,7 +180,6 @@ namespace TiviT.NCloak.CloakTasks
             }
             return opCode;
         }
-
 
         [StructLayout(LayoutKind.Sequential)]
         private struct InvalidOpCode

@@ -25,7 +25,7 @@ namespace TiviT.NCloak.CloakTasks
             if (context.Settings.NoRename)
                 return;
             //Go through the members and build up a mapping graph
-            //If this is done then the members in the graph will be obfuscated, otherwise we'll 
+            //If this is done then the members in the graph will be obfuscated, otherwise we'll
             //just obfuscate private members
 
             //Loop through each assembly and process it
@@ -91,7 +91,7 @@ namespace TiviT.NCloak.CloakTasks
                                 TypeDefinition baseType = FindBaseTypeDeclaration(typeDefinition, methodDefinition);
                                 if (baseType != null)
                                 {
-                                    //Find it in the mappings 
+                                    //Find it in the mappings
                                     TypeMapping baseTypeMapping = assemblyMapping.GetTypeMapping(baseType);
                                     if (baseTypeMapping != null)
                                     {
@@ -144,7 +144,7 @@ namespace TiviT.NCloak.CloakTasks
                         //Go through the old fashioned way
                         if (obfuscateAll)
                         {
-                            if ((propertyDefinition.GetMethod != null && propertyDefinition.GetMethod.IsVirtual) || 
+                            if ((propertyDefinition.GetMethod != null && propertyDefinition.GetMethod.IsVirtual) ||
                                 (propertyDefinition.SetMethod != null && propertyDefinition.SetMethod.IsVirtual))
                             {
                                 //We handle this differently - rather than creating a new name each time we need to reuse any already generated names
@@ -152,7 +152,7 @@ namespace TiviT.NCloak.CloakTasks
                                 TypeDefinition baseType = FindBaseTypeDeclaration(typeDefinition, propertyDefinition);
                                 if (baseType != null)
                                 {
-                                    //Find it in the mappings 
+                                    //Find it in the mappings
                                     TypeMapping baseTypeMapping = assemblyMapping.GetTypeMapping(baseType);
                                     if (baseTypeMapping != null)
                                     {
@@ -289,7 +289,7 @@ namespace TiviT.NCloak.CloakTasks
                 //Convert to a type definition
                 TypeDefinition td = tr.GetTypeDefinition();
                 if (td.Properties.HasProperty(property.Name))
-                    return td; 
+                    return td;
 
                 //Do a recursive search below
                 TypeDefinition baseInterface = FindBaseTypeDeclaration(td, property);

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+
 namespace TiviT.NCloak
 {
     public class NameManager
     {
         private readonly Dictionary<NamingTable, CharacterSet> namingTables;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NameManager"/> class.
         /// </summary>

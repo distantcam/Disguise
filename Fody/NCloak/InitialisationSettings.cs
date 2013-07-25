@@ -22,7 +22,6 @@ namespace TiviT.NCloak
             SupressIldasm = true;
         }
 
-        
         /// <summary>
         /// Gets a list of the assemblies to obfuscate.
         /// </summary>
@@ -60,7 +59,8 @@ namespace TiviT.NCloak
         /// <value><c>true</c> to encrypt strings; otherwise, <c>false</c>.</value>
         public bool EncryptStrings
         {
-            get; set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -69,7 +69,8 @@ namespace TiviT.NCloak
         /// <value><c>true</c> to include the attribute; otherwise, <c>false</c>.</value>
         public bool SupressIldasm
         {
-            get; set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -78,7 +79,8 @@ namespace TiviT.NCloak
         /// <value>The method used to confuse decompilation tools.</value>
         public ConfusionMethod ConfuseDecompilationMethod
         {
-            get; set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -107,7 +109,8 @@ namespace TiviT.NCloak
         /// <value>The type of the tamper proof assembly.</value>
         public AssemblyType TamperProofAssemblyType
         {
-            get; set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -116,7 +119,8 @@ namespace TiviT.NCloak
         /// <value><c>true</c> if rename switched OFF; otherwise, <c>false</c>.</value>
         public bool NoRename
         {
-            get; set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -131,7 +135,7 @@ namespace TiviT.NCloak
             //Check the assemblies to load
             if (assembliesToObfuscate.Count == 0)
                 throw new InitialisationException("Must specify at least one assembly to obfuscate");
-            
+
             //Make sure each file exists and that it is a valid assembly
             foreach (string assembly in assembliesToObfuscate)
             {

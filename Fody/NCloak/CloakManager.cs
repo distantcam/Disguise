@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Anotar.Custom;
 using TiviT.NCloak.CloakTasks;
 
 namespace TiviT.NCloak
@@ -48,7 +49,7 @@ namespace TiviT.NCloak
             RegisterTask<SimplifyTask>();
 
             //Encrypt strings before anything else
-            if (context.Settings.EncryptStrings) 
+            if (context.Settings.EncryptStrings)
                 RegisterTask(new StringEncryptionTask(StringEncryptionMethod.Xor));
 
             //Build up a mapping of the assembly and obfuscate
@@ -77,7 +78,6 @@ namespace TiviT.NCloak
                 RegisterTask<TamperProofTask>(); //Tamper proofing combines all assemblies into one
         }
 
-
         /// <summary>
         /// Runs the clock process.
         /// </summary>
@@ -93,7 +93,7 @@ namespace TiviT.NCloak
             //Run through each of our tasks
             foreach (ICloakTask task in cloakingTasks)
             {
-                OutputHelper.WriteTask(task);
+                Log.Information(task.Name);
                 task.RunTask(context);
             }
         }

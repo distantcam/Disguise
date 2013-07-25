@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 [assembly: Anotar.Custom.LogMinimalMessage]
 
@@ -18,15 +19,20 @@ public class Logger
 {
     public void Debug(string format, params object[] args)
     {
-        throw new NotSupportedException();
+        if (IsDebugEnabled)
+            System.Diagnostics.Debug.WriteLine(format, args);
     }
 
     public void Debug(Exception exception, string format, params object[] args)
     {
-        throw new NotSupportedException();
+        if (IsDebugEnabled)
+        {
+            System.Diagnostics.Debug.WriteLine(format, args);
+            System.Diagnostics.Debug.WriteLine(exception);
+        }
     }
 
-    public bool IsDebugEnabled { get { return false; } }
+    public bool IsDebugEnabled { get { return Debugger.IsAttached; } }
 
     public void Information(string format, params object[] args)
     {

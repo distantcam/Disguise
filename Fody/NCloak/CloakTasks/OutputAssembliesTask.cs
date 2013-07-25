@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Anotar.Custom;
 using Mono.Cecil;
 
 namespace TiviT.NCloak.CloakTasks
@@ -27,7 +28,7 @@ namespace TiviT.NCloak.CloakTasks
             {
                 //Save the assembly
                 string outputPath = Path.Combine(context.Settings.OutputDirectory, Path.GetFileName(assembly));
-                OutputHelper.WriteLine("Outputting assembly to {0}", outputPath);
+                Log.Information("Outputting assembly to {0}", outputPath);
                 assemblyCache[assembly].Write(outputPath);
             }
         }

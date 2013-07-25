@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Mono.Cecil;
-using System;
 
 namespace TiviT.NCloak.CloakTasks
 {
@@ -26,7 +26,7 @@ namespace TiviT.NCloak.CloakTasks
             foreach (string assembly in assemblyCache.Keys)
             {
                 AssemblyDefinition def = assemblyCache[assembly];
-                Type si = typeof (SuppressIldasmAttribute);
+                Type si = typeof(SuppressIldasmAttribute);
                 CustomAttribute found = null;
                 foreach (CustomAttribute attr in def.CustomAttributes)
                 {
@@ -41,12 +41,11 @@ namespace TiviT.NCloak.CloakTasks
                 if (found == null)
                 {
                     //Add one
-                    MethodReference constructor = def.MainModule.Import(typeof (SuppressIldasmAttribute).GetConstructor(Type.EmptyTypes));
+                    MethodReference constructor = def.MainModule.Import(typeof(SuppressIldasmAttribute).GetConstructor(Type.EmptyTypes));
                     CustomAttribute attr = new CustomAttribute(constructor);
                     def.CustomAttributes.Add(attr);
                 }
             }
-
         }
     }
 }
