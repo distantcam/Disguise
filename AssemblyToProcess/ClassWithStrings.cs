@@ -3,7 +3,7 @@ using System.Linq;
 
 public class ClassWithStrings
 {
-    public static string StaticString = "Fa la la!";
+    public static string StaticString = "HISSSSSSSSSSS!";
 
     public const string ConstString = "I am the law!";
 

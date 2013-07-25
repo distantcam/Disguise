@@ -28,7 +28,6 @@ public class ModuleWeaver
         LoggerFactory.LogWarn = LogWarning;
         LoggerFactory.LogError = LogError;
 
-        var obfuscator = new Obfuscator(new Config(Config));
-        obfuscator.Process(ModuleDefinition);
+        Config config = new Config(Config);
     }
 }

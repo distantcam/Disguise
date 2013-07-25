@@ -35,6 +35,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ClassInNamespace.cs" />
     <Compile Include="ClassWithStrings.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,7 @@ public class Config
 
     public Config(XElement config)
     {
-        xml = config != null ? config : new XElement("Disguise");
+        xml = config ?? new XElement("Disguise");
     }
 
     public bool SupressILdasm
@@ -27,6 +27,12 @@ public class Config
     {
         get { return GetBool("EncryptStrings"); }
         set { SetBool("EncryptStrings", value); }
+    }
+
+    public bool ObfuscateNames
+    {
+        get { return GetBool("ObfuscateNames"); }
+        set { SetBool("ObfuscateNames", value); }
     }
 
     public XElement ToXml { get { return xml; } }

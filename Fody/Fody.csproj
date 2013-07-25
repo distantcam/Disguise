@@ -11,7 +11,7 @@
     <AssemblyName>Disguise.Fody</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <FodyPath>..\packages\Fody.1.13.11.1</FodyPath>
+    <FodyPath>..\packages\Fody.1.13.12</FodyPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,9 +42,34 @@
     <Compile Include="Config.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
-    <Compile Include="Obfuscator.cs" />
-    <Compile Include="Tasks\StringEncryptionTask.cs" />
-    <Compile Include="Tasks\SupressIldasmTask.cs" />
+    <Compile Include="NCloak\AssemblyType.cs" />
+    <Compile Include="NCloak\AttributeExtensions.cs" />
+    <Compile Include="NCloak\CecilExtensions.cs" />
+    <Compile Include="NCloak\CharacterSet.cs" />
+    <Compile Include="NCloak\CloakContext.cs" />
+    <Compile Include="NCloak\CloakManager.cs" />
+    <Compile Include="NCloak\CloakTasks\ConfuseDecompilationTask.cs" />
+    <Compile Include="NCloak\CloakTasks\ICloakTask.cs" />
+    <Compile Include="NCloak\CloakTasks\MappingTask.cs" />
+    <Compile Include="NCloak\CloakTasks\ObfuscationTask.cs" />
+    <Compile Include="NCloak\CloakTasks\OptimizeTask.cs" />
+    <Compile Include="NCloak\CloakTasks\OutputAssembliesTask.cs" />
+    <Compile Include="NCloak\CloakTasks\SimplifyTask.cs" />
+    <Compile Include="NCloak\CloakTasks\StringEncryptionTask.cs" />
+    <Compile Include="NCloak\CloakTasks\SupressIldasmTask.cs" />
+    <Compile Include="NCloak\CloakTasks\TamperProofTask.cs" />
+    <Compile Include="NCloak\ConfusionMethod.cs" />
+    <Compile Include="NCloak\ICloakContext.cs" />
+    <Compile Include="NCloak\InitialisationException.cs" />
+    <Compile Include="NCloak\InitialisationSettings.cs" />
+    <Compile Include="NCloak\Mapping\AssemblyMapping.cs" />
+    <Compile Include="NCloak\Mapping\MappingGraph.cs" />
+    <Compile Include="NCloak\Mapping\MemberMapping.cs" />
+    <Compile Include="NCloak\Mapping\TypeMapping.cs" />
+    <Compile Include="NCloak\NameManager.cs" />
+    <Compile Include="NCloak\NamingTable.cs" />
+    <Compile Include="NCloak\OutputHelper.cs" />
+    <Compile Include="NCloak\StringEncryptionMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Anotar.Custom">
