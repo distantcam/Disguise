@@ -6,20 +6,16 @@ namespace TiviT.NCloak.CloakTasks
 {
     public class MappingTask : ICloakTask
     {
-        /// <summary>
-        /// Gets the task name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name
+        private readonly CloakContext context;
+
+        public MappingTask(CloakContext context)
         {
-            get { return "Creating call map"; }
+            this.context = context;
         }
 
-        /// <summary>
-        /// Runs the specified cloaking task.
-        /// </summary>
-        /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(CloakContext context)
+        public string Name { get { return "Creating call map"; } }
+
+        public void RunTask()
         {
             //Get out if rename is turned off
             if (context.Settings.NoRename)
@@ -31,9 +27,6 @@ namespace TiviT.NCloak.CloakTasks
 
             //Set up the mapping graph
             AssemblyMapping assemblyMapping = context.MappingGraph.AddAssembly(context.AssemblyDefinition);
-
-            //Get a reference to the name manager
-            NameManager nameManager = context.NameManager;
 
             //Go through each module
             foreach (ModuleDefinition moduleDefinition in context.AssemblyDefinition.Modules)
@@ -47,8 +40,7 @@ namespace TiviT.NCloak.CloakTasks
                     {
                         //We don't have it - get it
                         if (context.Settings.ObfuscateAllModifiers)
-                            typeMapping = assemblyMapping.AddType(typeDefinition,
-                                                                  nameManager.GenerateName(NamingTable.Type));
+                            typeMapping = assemblyMapping.AddType(typeDefinition, context.NameManager.GenerateName(NamingTable.Type));
                         else
                             typeMapping = assemblyMapping.AddType(typeDefinition, null);
                     }
@@ -56,25 +48,25 @@ namespace TiviT.NCloak.CloakTasks
                     //Go through each method
                     foreach (MethodDefinition methodDefinition in typeDefinition.Methods)
                     {
-                        MapMethod(context, assemblyMapping, nameManager, typeDefinition, typeMapping, methodDefinition);
+                        MapMethod(assemblyMapping, typeDefinition, typeMapping, methodDefinition);
                     }
 
                     //Properties
                     foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties)
                     {
-                        MapProperty(context, assemblyMapping, nameManager, typeDefinition, typeMapping, propertyDefinition);
+                        MapProperty(assemblyMapping, typeDefinition, typeMapping, propertyDefinition);
                     }
 
                     //Fields
                     foreach (FieldDefinition fieldDefinition in typeDefinition.Fields)
                     {
-                        MapField(context, nameManager, typeMapping, fieldDefinition);
+                        MapField(typeMapping, fieldDefinition);
                     }
                 }
             }
         }
 
-        private static void MapMethod(CloakContext context, AssemblyMapping assemblyMapping, NameManager nameManager, TypeDefinition typeDefinition, TypeMapping typeMapping, MethodDefinition methodDefinition)
+        private void MapMethod(AssemblyMapping assemblyMapping, TypeDefinition typeDefinition, TypeMapping typeMapping, MethodDefinition methodDefinition)
         {
             //First of all - check if we've obfuscated it already - if we have then don't bother
             if (typeMapping.HasMethodBeenObfuscated(methodDefinition.Name))
@@ -106,7 +98,7 @@ namespace TiviT.NCloak.CloakTasks
                             {
                                 //That's strange... we shouldn't get into here - but if we ever do then
                                 //we'll add the type mapping into both
-                                string obfuscatedName = nameManager.GenerateName(NamingTable.Method);
+                                string obfuscatedName = context.NameManager.GenerateName(NamingTable.Method);
                                 typeMapping.AddMethodMapping(methodDefinition, obfuscatedName);
                                 baseTypeMapping.AddMethodMapping(methodDefinition, obfuscatedName);
                             }
@@ -116,8 +108,8 @@ namespace TiviT.NCloak.CloakTasks
                             //Otherwise add it into our list manually
                             //at the base level first off
                             baseTypeMapping = assemblyMapping.AddType(baseType,
-                                                      nameManager.GenerateName(NamingTable.Type));
-                            string obfuscatedName = nameManager.GenerateName(NamingTable.Method);
+                                                      context.NameManager.GenerateName(NamingTable.Type));
+                            string obfuscatedName = context.NameManager.GenerateName(NamingTable.Method);
                             baseTypeMapping.AddMethodMapping(methodDefinition, obfuscatedName);
                             //Now at our implemented level
                             typeMapping.AddMethodMapping(methodDefinition, obfuscatedName);
@@ -127,18 +119,18 @@ namespace TiviT.NCloak.CloakTasks
                     {
                         //We must be at the base already - add normally
                         typeMapping.AddMethodMapping(methodDefinition,
-                                             nameManager.GenerateName(NamingTable.Method));
+                                             context.NameManager.GenerateName(NamingTable.Method));
                     }
                 }
                 else //Add normally
                     typeMapping.AddMethodMapping(methodDefinition,
-                                             nameManager.GenerateName(NamingTable.Method));
+                                             context.NameManager.GenerateName(NamingTable.Method));
             }
             else if (methodDefinition.IsPrivate)
-                typeMapping.AddMethodMapping(methodDefinition, nameManager.GenerateName(NamingTable.Method));
+                typeMapping.AddMethodMapping(methodDefinition, context.NameManager.GenerateName(NamingTable.Method));
         }
 
-        private static void MapProperty(CloakContext context, AssemblyMapping assemblyMapping, NameManager nameManager, TypeDefinition typeDefinition, TypeMapping typeMapping, PropertyDefinition propertyDefinition)
+        private void MapProperty(AssemblyMapping assemblyMapping, TypeDefinition typeDefinition, TypeMapping typeMapping, PropertyDefinition propertyDefinition)
         {
             //First of all - check if we've obfuscated it already - if we have then don't bother
             if (typeMapping.HasPropertyBeenObfuscated(propertyDefinition.Name))
@@ -166,7 +158,7 @@ namespace TiviT.NCloak.CloakTasks
                             {
                                 //That's strange... we shouldn't get into here - but if we ever do then
                                 //we'll add the type mapping into both
-                                string obfuscatedName = nameManager.GenerateName(NamingTable.Property);
+                                string obfuscatedName = context.NameManager.GenerateName(NamingTable.Property);
                                 typeMapping.AddPropertyMapping(propertyDefinition, obfuscatedName);
                                 baseTypeMapping.AddPropertyMapping(propertyDefinition, obfuscatedName);
                             }
@@ -176,8 +168,8 @@ namespace TiviT.NCloak.CloakTasks
                             //Otherwise add it into our list manually
                             //at the base level first off
                             baseTypeMapping = assemblyMapping.AddType(baseType,
-                                                      nameManager.GenerateName(NamingTable.Type));
-                            string obfuscatedName = nameManager.GenerateName(NamingTable.Property);
+                                                      context.NameManager.GenerateName(NamingTable.Type));
+                            string obfuscatedName = context.NameManager.GenerateName(NamingTable.Property);
                             baseTypeMapping.AddPropertyMapping(propertyDefinition, obfuscatedName);
                             //Now at our implemented level
                             typeMapping.AddPropertyMapping(propertyDefinition, obfuscatedName);
@@ -187,45 +179,45 @@ namespace TiviT.NCloak.CloakTasks
                     {
                         //We must be at the base already - add normally
                         typeMapping.AddPropertyMapping(propertyDefinition,
-                                             nameManager.GenerateName(NamingTable.Property));
+                                             context.NameManager.GenerateName(NamingTable.Property));
                     }
                 }
                 else
                     typeMapping.AddPropertyMapping(propertyDefinition,
-                                               nameManager.GenerateName(NamingTable.Property));
+                                               context.NameManager.GenerateName(NamingTable.Property));
             }
             else if (propertyDefinition.GetMethod != null && propertyDefinition.SetMethod != null)
             {
                 //Both parts need to be private
                 if (propertyDefinition.GetMethod.IsPrivate && propertyDefinition.SetMethod.IsPrivate)
-                    typeMapping.AddPropertyMapping(propertyDefinition, nameManager.GenerateName(NamingTable.Property));
+                    typeMapping.AddPropertyMapping(propertyDefinition, context.NameManager.GenerateName(NamingTable.Property));
             }
             else if (propertyDefinition.GetMethod != null)
             {
                 //Only the get is present - make sure it is private
                 if (propertyDefinition.GetMethod.IsPrivate)
-                    typeMapping.AddPropertyMapping(propertyDefinition, nameManager.GenerateName(NamingTable.Property));
+                    typeMapping.AddPropertyMapping(propertyDefinition, context.NameManager.GenerateName(NamingTable.Property));
             }
             else if (propertyDefinition.SetMethod != null)
             {
                 //Only the set is present - make sure it is private
                 if (propertyDefinition.SetMethod.IsPrivate)
-                    typeMapping.AddPropertyMapping(propertyDefinition, nameManager.GenerateName(NamingTable.Property));
+                    typeMapping.AddPropertyMapping(propertyDefinition, context.NameManager.GenerateName(NamingTable.Property));
             }
         }
 
-        private static void MapField(CloakContext context, NameManager nameManager, TypeMapping typeMapping, FieldDefinition fieldDefinition)
+        private void MapField(TypeMapping typeMapping, FieldDefinition fieldDefinition)
         {
             //First of all - check if we've obfuscated it already - if we have then don't bother
             if (typeMapping.HasFieldBeenObfuscated(fieldDefinition.Name))
                 return;
 
             if (context.Settings.ObfuscateAllModifiers)
-                typeMapping.AddFieldMapping(fieldDefinition, nameManager.GenerateName(NamingTable.Field));
+                typeMapping.AddFieldMapping(fieldDefinition, context.NameManager.GenerateName(NamingTable.Field));
             else if (fieldDefinition.IsPrivate)
             {
                 //Rename if private
-                typeMapping.AddFieldMapping(fieldDefinition, nameManager.GenerateName(NamingTable.Field));
+                typeMapping.AddFieldMapping(fieldDefinition, context.NameManager.GenerateName(NamingTable.Field));
             }
         }
 

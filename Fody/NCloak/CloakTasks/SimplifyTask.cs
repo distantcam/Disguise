@@ -9,12 +9,16 @@ namespace TiviT.NCloak.CloakTasks
     /// </summary>
     public class SimplifyTask : ICloakTask
     {
-        public string Name
+        private readonly CloakContext context;
+
+        public SimplifyTask(CloakContext context)
         {
-            get { return "Simplifying methods"; }
+            this.context = context;
         }
 
-        public void RunTask(CloakContext context)
+        public string Name { get { return "Simplifying methods"; } }
+
+        public void RunTask()
         {
             //We'll search methods only at this point
             foreach (ModuleDefinition moduleDefinition in context.AssemblyDefinition.Modules)

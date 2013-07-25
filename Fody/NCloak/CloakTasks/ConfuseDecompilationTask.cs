@@ -10,40 +10,24 @@ namespace TiviT.NCloak.CloakTasks
 {
     public class ConfuseDecompilationTask : ICloakTask
     {
+        private readonly CloakContext context;
         private readonly ConfusionMethod method;
         private static readonly Random random = new Random();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfuseDecompilationTask"/> class.
-        /// </summary>
-        public ConfuseDecompilationTask()
-            : this(ConfusionMethod.InvalidIl)
+        public ConfuseDecompilationTask(CloakContext context)
+            : this(context, ConfusionMethod.InvalidIl)
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfuseDecompilationTask"/> class.
-        /// </summary>
-        /// <param name="method">The method.</param>
-        public ConfuseDecompilationTask(ConfusionMethod method)
+        public ConfuseDecompilationTask(CloakContext context, ConfusionMethod method)
         {
+            this.context = context;
             this.method = method;
         }
 
-        /// <summary>
-        /// Gets the task name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name
-        {
-            get { return "Confusing Reflector"; }
-        }
+        public string Name { get { return "Confusing Reflector"; } }
 
-        /// <summary>
-        /// Runs the specified cloaking task.
-        /// </summary>
-        /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(CloakContext context)
+        public void RunTask()
         {
             //We don't need to do this
             if (method == ConfusionMethod.None)
@@ -92,10 +76,6 @@ namespace TiviT.NCloak.CloakTasks
             }
         }
 
-        /// <summary>
-        /// Inserts the invalid il.
-        /// </summary>
-        /// <param name="methodBody">The method body.</param>
         private static void InsertInvalidIl(MethodBody methodBody)
         {
             //Get the instructions and cil worker

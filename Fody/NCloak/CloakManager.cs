@@ -18,30 +18,30 @@ namespace TiviT.NCloak
         {
             if (context == null) throw new ArgumentNullException("context");
 
-            cloakingTasks.Add(new SimplifyTask());
+            cloakingTasks.Add(new SimplifyTask(context));
 
             //Encrypt strings before anything else
             if (context.Settings.EncryptStrings)
-                cloakingTasks.Add(new StringEncryptionTask(StringEncryptionMethod.Xor));
+                cloakingTasks.Add(new StringEncryptionTask(context, StringEncryptionMethod.Xor));
 
             //Build up a mapping of the assembly and obfuscate
             if (!context.Settings.NoRename)
             {
-                cloakingTasks.Add(new MappingTask());
-                cloakingTasks.Add(new ObfuscationTask());
+                cloakingTasks.Add(new MappingTask(context));
+                cloakingTasks.Add(new ObfuscationTask(context));
             }
 
             //Supress ILDASM decompilation
             if (context.Settings.SupressIldasm)
-                cloakingTasks.Add(new SupressIldasmTask());
+                cloakingTasks.Add(new SupressIldasmTask(context));
 
             //Try to confuse reflection
             if (context.Settings.ConfuseDecompilationMethod != ConfusionMethod.None)
-                cloakingTasks.Add(new ConfuseDecompilationTask(ConfusionMethod.InvalidIl));
+                cloakingTasks.Add(new ConfuseDecompilationTask(context, ConfusionMethod.InvalidIl));
 
             //Optimize the assembly (turn into short codes where poss)
             if (context.Settings.ConfuseDecompilationMethod == ConfusionMethod.None) //HACK: The new Mono.Cecil doesn't like bad IL codes
-                cloakingTasks.Add(new OptimizeTask());
+                cloakingTasks.Add(new OptimizeTask(context));
 
             ////Always last - output the assembly in the relevant format
             //if (String.IsNullOrEmpty(context.Settings.TamperProofAssemblyName))
@@ -56,14 +56,11 @@ namespace TiviT.NCloak
             if (cloakingTasks.Count == 0)
                 Configure(context);
 
-            //Make sure we have a context
-            if (context == null) throw new ArgumentNullException("context");
-
             //Run through each of our tasks
             foreach (ICloakTask task in cloakingTasks)
             {
                 Log.Information(task.Name);
-                task.RunTask(context);
+                task.RunTask();
             }
         }
     }

@@ -11,41 +11,25 @@ namespace TiviT.NCloak.CloakTasks
 {
     public class StringEncryptionTask : ICloakTask
     {
+        private readonly CloakContext context;
         private readonly StringEncryptionMethod method;
         private readonly Random random;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StringEncryptionTask"/> class.
-        /// </summary>
-        public StringEncryptionTask()
-            : this(StringEncryptionMethod.Xor)
+        public StringEncryptionTask(CloakContext context)
+            : this(context, StringEncryptionMethod.Xor)
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StringEncryptionTask"/> class.
-        /// </summary>
-        /// <param name="method">The method.</param>
-        public StringEncryptionTask(StringEncryptionMethod method)
+        public StringEncryptionTask(CloakContext context, StringEncryptionMethod method)
         {
+            this.context = context;
             this.method = method;
             random = new Random();
         }
 
-        /// <summary>
-        /// Gets the task name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name
-        {
-            get { return "Encrypting strings"; }
-        }
+        public string Name { get { return "Encrypting strings"; } }
 
-        /// <summary>
-        /// Encrypts the strings within the given assembly.
-        /// </summary>
-        /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(CloakContext context)
+        public void RunTask()
         {
             //Go through each assembly and encrypt the strings
             //for each assembly inject a decryption routine - we'll let the obfuscator hide it properly

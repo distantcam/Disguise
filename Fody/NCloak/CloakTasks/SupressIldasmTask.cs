@@ -6,20 +6,16 @@ namespace TiviT.NCloak.CloakTasks
 {
     public class SupressIldasmTask : ICloakTask
     {
-        /// <summary>
-        /// Gets the task name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name
+        private readonly CloakContext context;
+
+        public SupressIldasmTask(CloakContext context)
         {
-            get { return "Inserting anti-ILDASM code"; }
+            this.context = context;
         }
 
-        /// <summary>
-        /// Runs the specified cloaking task.
-        /// </summary>
-        /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(CloakContext context)
+        public string Name { get { return "Inserting anti-ILDASM code"; } }
+
+        public void RunTask()
         {
             Type si = typeof(SuppressIldasmAttribute);
             CustomAttribute found = null;

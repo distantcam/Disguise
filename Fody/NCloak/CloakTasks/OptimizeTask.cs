@@ -10,20 +10,16 @@ namespace TiviT.NCloak.CloakTasks
     /// </summary>
     public class OptimizeTask : ICloakTask
     {
-        /// <summary>
-        /// Gets the task name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name
+        private readonly CloakContext context;
+
+        public OptimizeTask(CloakContext context)
         {
-            get { return "Optimizing methods"; }
+            this.context = context;
         }
 
-        /// <summary>
-        /// Runs the specified cloaking task.
-        /// </summary>
-        /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(CloakContext context)
+        public string Name { get { return "Optimizing methods"; } }
+
+        public void RunTask()
         {
             //We'll search methods only at this point
             foreach (ModuleDefinition moduleDefinition in context.AssemblyDefinition.Modules)

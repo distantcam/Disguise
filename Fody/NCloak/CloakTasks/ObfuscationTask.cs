@@ -9,19 +9,16 @@ namespace TiviT.NCloak.CloakTasks
 {
     public class ObfuscationTask : ICloakTask
     {
-        /// <summary>
-        /// Gets the task name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name
+        private readonly CloakContext context;
+
+        public ObfuscationTask(CloakContext context)
         {
-            get { return "Obfuscating members"; }
+            this.context = context;
         }
 
-        /// <summary>
-        /// Runs the specified cloaking task.
-        /// </summary>
-        public void RunTask(CloakContext context)
+        public string Name { get { return "Obfuscating members"; } }
+
+        public void RunTask()
         {
             //Get the assembly mapping information (if any)
             if (context.MappingGraph.IsAssemblyMappingDefined(context.AssemblyDefinition))
