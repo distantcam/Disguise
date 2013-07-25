@@ -21,7 +21,7 @@ namespace TiviT.NCloak.CloakTasks
         /// <summary>
         /// Runs the specified cloaking task.
         /// </summary>
-        public void RunTask(ICloakContext context)
+        public void RunTask(CloakContext context)
         {
             //Get the assembly mapping information (if any)
             if (context.MappingGraph.IsAssemblyMappingDefined(context.AssemblyDefinition))
@@ -84,7 +84,7 @@ namespace TiviT.NCloak.CloakTasks
             }
         }
 
-        private static void UpdateMethodReferences(ICloakContext context, MethodDefinition methodDefinition)
+        private static void UpdateMethodReferences(CloakContext context, MethodDefinition methodDefinition)
         {
             if (methodDefinition.HasBody)
             {
@@ -136,7 +136,7 @@ namespace TiviT.NCloak.CloakTasks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="memberReference">The member reference.</param>
-        private static void UpdateMemberTypeReferences(ICloakContext context, MemberReference memberReference)
+        private static void UpdateMemberTypeReferences(CloakContext context, MemberReference memberReference)
         {
             //Get the type reference for this
             TypeReference methodType = memberReference.DeclaringType;
@@ -187,7 +187,7 @@ namespace TiviT.NCloak.CloakTasks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="typeReference">The type reference.</param>
-        private static void UpdateTypeReferences(ICloakContext context, TypeReference typeReference)
+        private static void UpdateTypeReferences(CloakContext context, TypeReference typeReference)
         {
             //Get the assembly for this
             if (typeReference.Scope is AssemblyNameReference)

@@ -5,7 +5,7 @@ using TiviT.NCloak.Mapping;
 
 namespace TiviT.NCloak
 {
-    public class CloakContext : ICloakContext
+    public class CloakContext
     {
         private readonly AssemblyDefinition assemblyDefinition;
         private readonly InitialisationSettings settings;

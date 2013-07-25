@@ -19,7 +19,7 @@ namespace TiviT.NCloak.CloakTasks
         /// Runs the specified cloaking task.
         /// </summary>
         /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(ICloakContext context)
+        public void RunTask(CloakContext context)
         {
             //Get out if rename is turned off
             if (context.Settings.NoRename)
@@ -74,7 +74,7 @@ namespace TiviT.NCloak.CloakTasks
             }
         }
 
-        private static void MapMethod(ICloakContext context, AssemblyMapping assemblyMapping, NameManager nameManager, TypeDefinition typeDefinition, TypeMapping typeMapping, MethodDefinition methodDefinition)
+        private static void MapMethod(CloakContext context, AssemblyMapping assemblyMapping, NameManager nameManager, TypeDefinition typeDefinition, TypeMapping typeMapping, MethodDefinition methodDefinition)
         {
             //First of all - check if we've obfuscated it already - if we have then don't bother
             if (typeMapping.HasMethodBeenObfuscated(methodDefinition.Name))
@@ -138,7 +138,7 @@ namespace TiviT.NCloak.CloakTasks
                 typeMapping.AddMethodMapping(methodDefinition, nameManager.GenerateName(NamingTable.Method));
         }
 
-        private static void MapProperty(ICloakContext context, AssemblyMapping assemblyMapping, NameManager nameManager, TypeDefinition typeDefinition, TypeMapping typeMapping, PropertyDefinition propertyDefinition)
+        private static void MapProperty(CloakContext context, AssemblyMapping assemblyMapping, NameManager nameManager, TypeDefinition typeDefinition, TypeMapping typeMapping, PropertyDefinition propertyDefinition)
         {
             //First of all - check if we've obfuscated it already - if we have then don't bother
             if (typeMapping.HasPropertyBeenObfuscated(propertyDefinition.Name))
@@ -214,7 +214,7 @@ namespace TiviT.NCloak.CloakTasks
             }
         }
 
-        private static void MapField(ICloakContext context, NameManager nameManager, TypeMapping typeMapping, FieldDefinition fieldDefinition)
+        private static void MapField(CloakContext context, NameManager nameManager, TypeMapping typeMapping, FieldDefinition fieldDefinition)
         {
             //First of all - check if we've obfuscated it already - if we have then don't bother
             if (typeMapping.HasFieldBeenObfuscated(fieldDefinition.Name))

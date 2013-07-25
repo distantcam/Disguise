@@ -43,7 +43,7 @@ namespace TiviT.NCloak.CloakTasks
         /// Runs the specified cloaking task.
         /// </summary>
         /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(ICloakContext context)
+        public void RunTask(CloakContext context)
         {
             //We don't need to do this
             if (method == ConfusionMethod.None)

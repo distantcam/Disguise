@@ -45,7 +45,7 @@ namespace TiviT.NCloak.CloakTasks
         /// Encrypts the strings within the given assembly.
         /// </summary>
         /// <param name="context">The running context of this cloak job.</param>
-        public void RunTask(ICloakContext context)
+        public void RunTask(CloakContext context)
         {
             //Go through each assembly and encrypt the strings
             //for each assembly inject a decryption routine - we'll let the obfuscator hide it properly

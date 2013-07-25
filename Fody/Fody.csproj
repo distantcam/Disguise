@@ -42,7 +42,6 @@
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
-    <Compile Include="NCloak\AssemblyType.cs" />
     <Compile Include="NCloak\CharacterSet.cs" />
     <Compile Include="NCloak\CloakContext.cs" />
     <Compile Include="NCloak\CloakManager.cs" />
@@ -55,8 +54,6 @@
     <Compile Include="NCloak\CloakTasks\StringEncryptionTask.cs" />
     <Compile Include="NCloak\CloakTasks\SupressIldasmTask.cs" />
     <Compile Include="NCloak\ConfusionMethod.cs" />
-    <Compile Include="NCloak\ICloakContext.cs" />
-    <Compile Include="NCloak\InitialisationException.cs" />
     <Compile Include="NCloak\InitialisationSettings.cs" />
     <Compile Include="NCloak\Mapping\AssemblyMapping.cs" />
     <Compile Include="NCloak\Mapping\MappingGraph.cs" />

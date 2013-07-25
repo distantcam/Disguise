@@ -9,23 +9,15 @@ namespace TiviT.NCloak
     {
         private readonly List<ICloakTask> cloakingTasks;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloakManager"/> class.
-        /// </summary>
         public CloakManager()
         {
             cloakingTasks = new List<ICloakTask>();
         }
 
-        /// <summary>
-        /// Configures the specified context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        public void Configure(ICloakContext context)
+        private void Configure(CloakContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
 
-            //Simplify the task
             cloakingTasks.Add(new SimplifyTask());
 
             //Encrypt strings before anything else
@@ -58,10 +50,7 @@ namespace TiviT.NCloak
             //    RegisterTask<TamperProofTask>(); //Tamper proofing combines all assemblies into one
         }
 
-        /// <summary>
-        /// Runs the clock process.
-        /// </summary>
-        public void Run(ICloakContext context)
+        public void Run(CloakContext context)
         {
             //Back stop - allows for tests to include only the relevant tasks
             if (cloakingTasks.Count == 0)
