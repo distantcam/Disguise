@@ -40,7 +40,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CecilExtensions.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
     <Compile Include="NCloak\AssemblyType.cs" />
@@ -52,11 +51,9 @@
     <Compile Include="NCloak\CloakTasks\MappingTask.cs" />
     <Compile Include="NCloak\CloakTasks\ObfuscationTask.cs" />
     <Compile Include="NCloak\CloakTasks\OptimizeTask.cs" />
-    <Compile Include="NCloak\CloakTasks\OutputAssembliesTask.cs" />
     <Compile Include="NCloak\CloakTasks\SimplifyTask.cs" />
     <Compile Include="NCloak\CloakTasks\StringEncryptionTask.cs" />
     <Compile Include="NCloak\CloakTasks\SupressIldasmTask.cs" />
-    <Compile Include="NCloak\CloakTasks\TamperProofTask.cs" />
     <Compile Include="NCloak\ConfusionMethod.cs" />
     <Compile Include="NCloak\ICloakContext.cs" />
     <Compile Include="NCloak\InitialisationException.cs" />

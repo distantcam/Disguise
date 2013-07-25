@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Mono.Cecil;
 
@@ -22,29 +21,24 @@ namespace TiviT.NCloak.CloakTasks
         /// <param name="context">The running context of this cloak job.</param>
         public void RunTask(ICloakContext context)
         {
-            Dictionary<string, AssemblyDefinition> assemblyCache = context.GetAssemblyDefinitions();
-            foreach (string assembly in assemblyCache.Keys)
+            Type si = typeof(SuppressIldasmAttribute);
+            CustomAttribute found = null;
+            foreach (CustomAttribute attr in context.AssemblyDefinition.CustomAttributes)
             {
-                AssemblyDefinition def = assemblyCache[assembly];
-                Type si = typeof(SuppressIldasmAttribute);
-                CustomAttribute found = null;
-                foreach (CustomAttribute attr in def.CustomAttributes)
+                if (attr.Constructor.DeclaringType.FullName == si.FullName)
                 {
-                    if (attr.Constructor.DeclaringType.FullName == si.FullName)
-                    {
-                        found = attr;
-                        break;
-                    }
+                    found = attr;
+                    break;
                 }
+            }
 
-                //Only add if it's not there already
-                if (found == null)
-                {
-                    //Add one
-                    MethodReference constructor = def.MainModule.Import(typeof(SuppressIldasmAttribute).GetConstructor(Type.EmptyTypes));
-                    CustomAttribute attr = new CustomAttribute(constructor);
-                    def.CustomAttributes.Add(attr);
-                }
+            //Only add if it's not there already
+            if (found == null)
+            {
+                //Add one
+                MethodReference constructor = context.AssemblyDefinition.MainModule.Import(typeof(SuppressIldasmAttribute).GetConstructor(Type.EmptyTypes));
+                CustomAttribute attr = new CustomAttribute(constructor);
+                context.AssemblyDefinition.CustomAttributes.Add(attr);
             }
         }
     }

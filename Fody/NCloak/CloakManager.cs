@@ -71,11 +71,11 @@ namespace TiviT.NCloak
             if (context.Settings.ConfuseDecompilationMethod == ConfusionMethod.None) //HACK: The new Mono.Cecil doesn't like bad IL codes
                 RegisterTask<OptimizeTask>();
 
-            //Always last - output the assembly in the relevant format
-            if (String.IsNullOrEmpty(context.Settings.TamperProofAssemblyName))
-                RegisterTask<OutputAssembliesTask>(); //Default
-            else
-                RegisterTask<TamperProofTask>(); //Tamper proofing combines all assemblies into one
+            ////Always last - output the assembly in the relevant format
+            //if (String.IsNullOrEmpty(context.Settings.TamperProofAssemblyName))
+            //    RegisterTask<OutputAssembliesTask>(); //Default
+            //else
+            //    RegisterTask<TamperProofTask>(); //Tamper proofing combines all assemblies into one
         }
 
         /// <summary>

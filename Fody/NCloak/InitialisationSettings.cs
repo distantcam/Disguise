@@ -1,44 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace TiviT.NCloak
 {
     public class InitialisationSettings
     {
-        private readonly List<string> assembliesToObfuscate;
-        private string tamperProofAssemblyName;
-        private bool validated;
+        private readonly XElement xml;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InitialisationSettings"/> class.
         /// </summary>
         public InitialisationSettings()
         {
-            assembliesToObfuscate = new List<string>();
-            validated = false;
-            SupressIldasm = true;
+            xml = new XElement("Disguise");
         }
 
-        /// <summary>
-        /// Gets a list of the assemblies to obfuscate.
-        /// </summary>
-        /// <value>The assemblies to obfuscate.</value>
-        public List<string> AssembliesToObfuscate
+        public InitialisationSettings(XElement config)
         {
-            get
-            {
-                return assembliesToObfuscate;
-            }
+            xml = config ?? new XElement("Disguise");
         }
-
-        /// <summary>
-        /// Gets or sets the output directory.
-        /// </summary>
-        /// <value>The output directory.</value>
-        public string OutputDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the obfuscator should obfuscate all access modifiers as opposed
@@ -49,8 +31,8 @@ namespace TiviT.NCloak
         /// </value>
         public bool ObfuscateAllModifiers
         {
-            get;
-            set;
+            get { return GetBool("ObfuscateAllModifiers"); }
+            set { Set("ObfuscateAllModifiers", value); }
         }
 
         /// <summary>
@@ -59,8 +41,8 @@ namespace TiviT.NCloak
         /// <value><c>true</c> to encrypt strings; otherwise, <c>false</c>.</value>
         public bool EncryptStrings
         {
-            get;
-            set;
+            get { return GetBool("EncryptStrings"); }
+            set { Set("EncryptStrings", value); }
         }
 
         /// <summary>
@@ -69,8 +51,8 @@ namespace TiviT.NCloak
         /// <value><c>true</c> to include the attribute; otherwise, <c>false</c>.</value>
         public bool SupressIldasm
         {
-            get;
-            set;
+            get { return GetBool("SupressIldasm", true); }
+            set { Set("SupressIldasm", value, true); }
         }
 
         /// <summary>
@@ -79,8 +61,8 @@ namespace TiviT.NCloak
         /// <value>The method used to confuse decompilation tools.</value>
         public ConfusionMethod ConfuseDecompilationMethod
         {
-            get;
-            set;
+            get { return GetEnum<ConfusionMethod>("ConfuseDecompilationMethod"); }
+            set { Set("ConfuseDecompilationMethod", value); }
         }
 
         /// <summary>
@@ -90,14 +72,14 @@ namespace TiviT.NCloak
         /// <value>The name of the tamper proof assembly.</value>
         public string TamperProofAssemblyName
         {
-            get { return tamperProofAssemblyName; }
+            get { return GetString("TamperProofAssemblyName"); }
             set
             {
                 //Validate it
                 if (String.IsNullOrEmpty(value))
-                    tamperProofAssemblyName = null;
+                    Set("TamperProofAssemblyName", "");
                 else if (Regex.IsMatch(value, "[A-Za-z][_A-Za-z0-9]*"))
-                    tamperProofAssemblyName = value;
+                    Set("TamperProofAssemblyName", value);
                 else
                     throw new FormatException("Assembly name must be a valid .NET friendly type name ([A-Za-z][_A-Za-z0-9]*)");
             }
@@ -109,8 +91,8 @@ namespace TiviT.NCloak
         /// <value>The type of the tamper proof assembly.</value>
         public AssemblyType TamperProofAssemblyType
         {
-            get;
-            set;
+            get { return GetEnum<AssemblyType>("TamperProofAssemblyType"); }
+            set { Set("TamperProofAssemblyType", value); }
         }
 
         /// <summary>
@@ -119,49 +101,60 @@ namespace TiviT.NCloak
         /// <value><c>true</c> if rename switched OFF; otherwise, <c>false</c>.</value>
         public bool NoRename
         {
-            get;
-            set;
+            get { return GetBool("NoRename"); }
+            set { Set("NoRename", value); }
         }
 
-        /// <summary>
-        /// Validates the initialisation settings.
-        /// </summary>
-        public void Validate()
+        private bool GetBool(XName name, bool dfault = false)
         {
-            //Only validate if it hasn't already
-            if (validated)
-                return;
+            var attribute = xml.Attribute(name);
 
-            //Check the assemblies to load
-            if (assembliesToObfuscate.Count == 0)
-                throw new InitialisationException("Must specify at least one assembly to obfuscate");
+            if (attribute == null)
+                return dfault;
 
-            //Make sure each file exists and that it is a valid assembly
-            foreach (string assembly in assembliesToObfuscate)
+            return XmlConvert.ToBoolean(attribute.Value);
+        }
+
+        private string GetString(XName name, string dfault = "")
+        {
+            var attribute = xml.Attribute(name);
+
+            if (attribute == null)
+                return dfault;
+
+            return attribute.Value;
+        }
+
+        private T GetEnum<T>(XName name, T dfault = default(T)) where T : struct
+        {
+            var attribute = xml.Attribute(name);
+
+            if (attribute == null)
+                return dfault;
+
+            T result;
+            if (Enum.TryParse<T>(attribute.Value, true, out result))
+                return result;
+
+            return dfault;
+        }
+
+        private void Set<T>(XName name, T value, T dfault = default(T))
+        {
+            var attribute = xml.Attribute(name);
+
+            if (attribute == null)
             {
-                //Check it exists
-                if (!File.Exists(assembly))
-                    throw new InitialisationException(String.Format("The specified assembly \"{0}\" does not exist", assembly));
-
-                //Check it's a valid assembly
-                try
-                {
-                    AssemblyName.GetAssemblyName(assembly);
-                }
-                catch (Exception ex)
-                {
-                    throw new InitialisationException(String.Format("The specified assembly \"{0}\" is not valid.", assembly), ex);
-                }
+                if (!object.Equals(value, dfault))
+                    xml.Add(new XAttribute(name, value));
             }
-
-            //Check the output directory
-            if (String.IsNullOrEmpty(OutputDirectory))
-                throw new InitialisationException("An output directory is required");
-            if (!Directory.Exists(OutputDirectory))
-                throw new InitialisationException(String.Format("The output directory {0} does not currently exist.", OutputDirectory));
-
-            //Set it to validated
-            validated = true;
+            else
+            {
+                if (object.Equals(value, dfault))
+                    attribute.Remove();
+                else
+                    attribute.SetValue(value);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Xml.Linq;
 using Mono.Cecil;
 
 public static class AssemblyWeaver
@@ -42,7 +43,8 @@ public static class AssemblyWeaver
             LogInfo = LogInfo,
             LogWarning = LogWarning,
             LogError = LogError,
-            DefineConstants = new[] { "DEBUG" } // Always testing the debug weaver
+            DefineConstants = new[] { "DEBUG" }, // Always testing the debug weaver
+            Config = XElement.Parse("<Disguise EncryptStrings=\"true\" />")
         };
 
         weavingTask.Execute();

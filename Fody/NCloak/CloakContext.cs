@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using TiviT.NCloak.Mapping;
@@ -9,23 +7,20 @@ namespace TiviT.NCloak
 {
     public class CloakContext : ICloakContext
     {
+        private readonly ModuleDefinition moduleDefinition;
         private readonly InitialisationSettings settings;
         private readonly NameManager nameManager;
         private readonly MappingGraph mappingGraph;
-        private readonly Dictionary<string, AssemblyDefinition> assemblyDefinitions;
-        private bool assemblyDefinitionsLoaded;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloakContext"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        public CloakContext(InitialisationSettings settings)
+        public CloakContext(InitialisationSettings settings, ModuleDefinition moduleDefinition)
         {
+            this.moduleDefinition = moduleDefinition;
             //Check for null
             if (settings == null) throw new ArgumentNullException("settings");
-
-            //Make sure they're valid
-            settings.Validate();
 
             //Finally store them
             this.settings = settings;
@@ -35,10 +30,6 @@ namespace TiviT.NCloak
 
             //Create the mapping graph
             mappingGraph = new MappingGraph();
-
-            //Initialise the assembly definitions
-            assemblyDefinitionsLoaded = false;
-            assemblyDefinitions = new Dictionary<string, AssemblyDefinition>();
         }
 
         /// <summary>
@@ -68,51 +59,6 @@ namespace TiviT.NCloak
             get { return mappingGraph; }
         }
 
-        /// <summary>
-        /// Gets the assembly definitions to be processed; this caches
-        /// the assembly definitions therefore needs to be treated as such.
-        /// TODO: Change Dictionary to a readonly alternative
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, AssemblyDefinition> GetAssemblyDefinitions()
-        {
-            if (assemblyDefinitionsLoaded)
-                return assemblyDefinitions;
-
-            //Initialise the list
-            foreach (string assembly in settings.AssembliesToObfuscate)
-            {
-                if (assemblyDefinitions.ContainsKey(assembly))
-                    continue;
-                assemblyDefinitions.Add(assembly, AssemblyDefinition.ReadAssembly(assembly));
-            }
-            assemblyDefinitionsLoaded = true;
-            return assemblyDefinitions;
-        }
-
-        /// <summary>
-        /// Reloads the assembly definitions; that is it goes through the current assemblies, outputs them to memory and then reloads them into the cache
-        /// </summary>
-        public void ReloadAssemblyDefinitions()
-        {
-            //Check that there is something to do
-            if (!assemblyDefinitionsLoaded)
-                return;
-
-            //Process the cache
-            string[] keys = assemblyDefinitions.Keys.ToArray();
-            foreach (string key in keys)
-            {
-                AssemblyDefinition oldDef = assemblyDefinitions[key];
-                byte[] buffer;
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    oldDef.Write(ms);
-                    buffer = ms.ToArray();
-                }
-                using (MemoryStream ms = new MemoryStream(buffer))
-                    assemblyDefinitions[key] = AssemblyDefinition.ReadAssembly(ms);
-            }
-        }
+        public AssemblyDefinition AssemblyDefinition { get { return moduleDefinition.Assembly; } }
     }
 }

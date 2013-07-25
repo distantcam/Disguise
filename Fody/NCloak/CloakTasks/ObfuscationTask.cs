@@ -23,28 +23,14 @@ namespace TiviT.NCloak.CloakTasks
         /// </summary>
         public void RunTask(ICloakContext context)
         {
-            //Loop through each assembly and obfuscate it
-            foreach (AssemblyDefinition definition in context.GetAssemblyDefinitions().Values)
-            {
-                Obfuscate(context, definition);
-            }
-        }
-
-        /// <summary>
-        /// Performs obfuscation on the specified assembly.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="definition">The assembly definition.</param>
-        private static void Obfuscate(ICloakContext context, AssemblyDefinition definition)
-        {
             //Get the assembly mapping information (if any)
-            if (context.MappingGraph.IsAssemblyMappingDefined(definition))
+            if (context.MappingGraph.IsAssemblyMappingDefined(context.AssemblyDefinition))
             {
                 //Get the mapping object
-                AssemblyMapping assemblyMapping = context.MappingGraph.GetAssemblyMapping(definition);
+                AssemblyMapping assemblyMapping = context.MappingGraph.GetAssemblyMapping(context.AssemblyDefinition);
 
                 //Go through each module
-                foreach (ModuleDefinition moduleDefinition in definition.Modules)
+                foreach (ModuleDefinition moduleDefinition in context.AssemblyDefinition.Modules)
                 {
                     //Go through each type
                     foreach (TypeDefinition typeDefinition in moduleDefinition.GetAllTypes())

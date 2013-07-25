@@ -24,21 +24,8 @@ namespace TiviT.NCloak.CloakTasks
         /// <param name="context">The running context of this cloak job.</param>
         public void RunTask(ICloakContext context)
         {
-            foreach (AssemblyDefinition assembly in context.GetAssemblyDefinitions().Values)
-            {
-                Simplify(assembly);
-            }
-            context.ReloadAssemblyDefinitions();
-        }
-
-        /// <summary>
-        /// Fixes the invalid instructions.
-        /// </summary>
-        /// <param name="assembly">The assembly.</param>
-        private static void Simplify(AssemblyDefinition assembly)
-        {
             //We'll search methods only at this point
-            foreach (ModuleDefinition moduleDefinition in assembly.Modules)
+            foreach (ModuleDefinition moduleDefinition in context.AssemblyDefinition.Modules)
             {
                 //Go through each type
                 foreach (TypeDefinition typeDefinition in moduleDefinition.GetAllTypes())

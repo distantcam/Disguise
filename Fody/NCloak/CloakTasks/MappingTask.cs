@@ -24,35 +24,22 @@ namespace TiviT.NCloak.CloakTasks
             //Get out if rename is turned off
             if (context.Settings.NoRename)
                 return;
+
             //Go through the members and build up a mapping graph
             //If this is done then the members in the graph will be obfuscated, otherwise we'll
             //just obfuscate private members
 
-            //Loop through each assembly and process it
-            foreach (AssemblyDefinition definition in context.GetAssemblyDefinitions().Values)
-            {
-                ProcessAssembly(context, definition);
-            }
-        }
-
-        /// <summary>
-        /// Processes the assembly - goes through each member and applies a mapping.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="definition">The assembly definition.</param>
-        private static void ProcessAssembly(ICloakContext context, AssemblyDefinition definition)
-        {
             //Store whether to obfuscate all members
             bool obfuscateAll = context.Settings.ObfuscateAllModifiers;
 
             //Set up the mapping graph
-            AssemblyMapping assemblyMapping = context.MappingGraph.AddAssembly(definition);
+            AssemblyMapping assemblyMapping = context.MappingGraph.AddAssembly(context.AssemblyDefinition);
 
             //Get a reference to the name manager
             NameManager nameManager = context.NameManager;
 
             //Go through each module
-            foreach (ModuleDefinition moduleDefinition in definition.Modules)
+            foreach (ModuleDefinition moduleDefinition in context.AssemblyDefinition.Modules)
             {
                 //Go through each type
                 foreach (TypeDefinition typeDefinition in moduleDefinition.GetAllTypes())

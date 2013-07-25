@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using Mono.Cecil;
+using TiviT.NCloak;
 
 public class ModuleWeaver
 {
@@ -28,6 +29,12 @@ public class ModuleWeaver
         LoggerFactory.LogWarn = LogWarning;
         LoggerFactory.LogError = LogError;
 
-        Config config = new Config(Config);
+        var settings = new InitialisationSettings(Config);
+
+        var manager = new CloakManager();
+
+        var cloakContext = new CloakContext(settings, ModuleDefinition);
+
+        manager.Run(cloakContext);
     }
 }

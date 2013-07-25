@@ -49,18 +49,14 @@ namespace TiviT.NCloak.CloakTasks
             if (method == ConfusionMethod.None)
                 return;
 
-            //Go through each assembly
-            foreach (AssemblyDefinition definition in context.GetAssemblyDefinitions().Values)
+            switch (method)
             {
-                switch (method)
-                {
-                    case ConfusionMethod.InvalidIl:
-                        ConfuseDecompilationWithInvalidIl(definition);
-                        break;
+                case ConfusionMethod.InvalidIl:
+                    ConfuseDecompilationWithInvalidIl(context.AssemblyDefinition);
+                    break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

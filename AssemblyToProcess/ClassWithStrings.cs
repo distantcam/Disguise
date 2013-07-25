@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Linq;
 
-public class ClassWithStrings
+internal class ClassWithStrings
 {
-    public static string StaticString = "HISSSSSSSSSSS!";
+    private static string StaticString = "HISSSSSSSSSSS!";
 
-    public const string ConstString = "I am the law!";
+    private const string ConstString = "I am the law!";
 
-    public string FieldString = "If you build it, they will come.";
+    private string FieldString = "If you build it, they will come.";
 
-    public string LocalMethod()
+    private string LocalMethod()
     {
         string localString = "I spy with my little eye, something beginning with S.";
         return localString;
     }
 
-    public string UsesConstantString()
+    private string UsesConstantString()
     {
         var local = ConstString;
         return local;

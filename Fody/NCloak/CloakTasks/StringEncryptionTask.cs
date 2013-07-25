@@ -42,7 +42,7 @@ namespace TiviT.NCloak.CloakTasks
         }
 
         /// <summary>
-        /// Runs the specified cloaking task.
+        /// Encrypts the strings within the given assembly.
         /// </summary>
         /// <param name="context">The running context of this cloak job.</param>
         public void RunTask(ICloakContext context)
@@ -50,31 +50,20 @@ namespace TiviT.NCloak.CloakTasks
             //Go through each assembly and encrypt the strings
             //for each assembly inject a decryption routine - we'll let the obfuscator hide it properly
             //Loop through each assembly and obfuscate it
-            foreach (AssemblyDefinition definition in context.GetAssemblyDefinitions().Values)
-            {
-                EncryptStringsInAssembly(definition);
-            }
-        }
 
-        /// <summary>
-        /// Encrypts the strings within the given assembly.
-        /// </summary>
-        /// <param name="definition">The assembly definition.</param>
-        private void EncryptStringsInAssembly(AssemblyDefinition definition)
-        {
             //Add an encryption function
             MethodReference decryptionMethod = null;
 
             //Generate a new type for decryption
             Log.Information("Generating global decrypt method");
-            foreach (TypeDefinition td in definition.MainModule.GetAllTypes())
+            foreach (TypeDefinition td in context.AssemblyDefinition.MainModule.GetAllTypes())
                 if (td.Name == "<Module>")
                 {
-                    MethodDefinition md = new MethodDefinition("Decrypt", MethodAttributes.HideBySig | MethodAttributes.Static | MethodAttributes.CompilerControlled, definition.Import(typeof(string)));
+                    MethodDefinition md = new MethodDefinition("Decrypt", MethodAttributes.HideBySig | MethodAttributes.Static | MethodAttributes.CompilerControlled, context.AssemblyDefinition.Import(typeof(string)));
 
                     //Generate the parameters
-                    md.Parameters.Add(new ParameterDefinition("v", ParameterAttributes.None, definition.Import(typeof(string))));
-                    md.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, definition.Import(typeof(int))));
+                    md.Parameters.Add(new ParameterDefinition("v", ParameterAttributes.None, context.AssemblyDefinition.Import(typeof(string))));
+                    md.Parameters.Add(new ParameterDefinition("s", ParameterAttributes.None, context.AssemblyDefinition.Import(typeof(int))));
 
                     //Add it
                     td.Methods.Add(md);
@@ -85,7 +74,7 @@ namespace TiviT.NCloak.CloakTasks
                     switch (method)
                     {
                         case StringEncryptionMethod.Xor:
-                            GenerateXorDecryptionMethod(definition, md.Body);
+                            GenerateXorDecryptionMethod(context.AssemblyDefinition, md.Body);
                             break;
 
                         default:
@@ -98,7 +87,7 @@ namespace TiviT.NCloak.CloakTasks
 
             //Loop through the modules
             Log.Information("Processing modules");
-            foreach (ModuleDefinition moduleDefinition in definition.Modules)
+            foreach (ModuleDefinition moduleDefinition in context.AssemblyDefinition.Modules)
             {
                 //Go through each type
                 foreach (TypeDefinition typeDefinition in moduleDefinition.GetAllTypes())
@@ -109,7 +98,7 @@ namespace TiviT.NCloak.CloakTasks
                         if (methodDefinition.HasBody)
                         {
                             Log.Information("> {0}.{1}.{2}", typeDefinition.Namespace, typeDefinition.Name, methodDefinition.Name);
-                            ProcessInstructions(definition, methodDefinition.Body, decryptionMethod);
+                            ProcessInstructions(context.AssemblyDefinition, methodDefinition.Body, decryptionMethod);
                         }
                     }
                 }

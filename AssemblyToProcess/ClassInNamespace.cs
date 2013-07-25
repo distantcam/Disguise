@@ -3,14 +3,14 @@ using System.Linq;
 
 namespace SomeApp
 {
-    public class ClassInNamespace
+    internal class ClassInNamespace
     {
-        public class NestedClassInNamespace
+        private class NestedClassInNamespace
         {
         }
     }
 
-    public class GenericClassInNamespace<T>
+    internal class GenericClassInNamespace<T>
     {
     }
 }

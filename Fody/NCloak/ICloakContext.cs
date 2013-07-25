@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Mono.Cecil;
+﻿using Mono.Cecil;
 using TiviT.NCloak.Mapping;
 
 namespace TiviT.NCloak
@@ -24,17 +23,6 @@ namespace TiviT.NCloak
         /// <value>The mapping graph.</value>
         MappingGraph MappingGraph { get; }
 
-        /// <summary>
-        /// Gets the assembly definitions to be processed; this caches
-        /// the assembly definitions therefore needs to be treated as such.
-        /// TODO: Change Dictionary to a readonly alternative
-        /// </summary>
-        /// <returns></returns>
-        Dictionary<string, AssemblyDefinition> GetAssemblyDefinitions();
-
-        /// <summary>
-        /// Reloads the assembly definitions; that is it goes through the current assemblies, outputs them to memory and then reloads them into the cache
-        /// </summary>
-        void ReloadAssemblyDefinitions();
+        AssemblyDefinition AssemblyDefinition { get; }
     }
 }
