@@ -131,37 +131,20 @@ namespace TiviT.NCloak.CloakTasks
             body.InitLocals = true;
             body.Method.AddLocal(typeof(char[]));
             body.Method.AddLocal(typeof(int));
-            body.Method.AddLocal(typeof(string));
-            body.Method.AddLocal(typeof(bool));
 
-            //Start with a nop
-            worker.Append(worker.Create(OpCodes.Nop));
-
-            //Load the first argument into the register
-            Instruction ldArg0 = worker.Create(OpCodes.Ldarg_0);
-            worker.Append(ldArg0);
-
-            //Call ToCharArray on this -- need to find it first
             var toCharArrayMethodRef = assembly.Import(typeof(string).GetMethod("ToCharArray", Type.EmptyTypes));
-            //Import the method first
-            toCharArrayMethodRef = body.ImportMethod(toCharArrayMethodRef);
-            Instruction toCharArray = worker.Create(OpCodes.Callvirt, toCharArrayMethodRef);
-            worker.Append(toCharArray);
-            //Store it in the first local
-            Instruction stLoc0 = worker.Create(OpCodes.Stloc_0);
-            worker.Append(stLoc0);
+            var constructor = assembly.Import(typeof(string).GetConstructor(new[] { typeof(char[]) }));
 
-            //Set up the loop
+            worker.Append(worker.Create(OpCodes.Ldarg_0));
+            worker.Append(worker.Create(OpCodes.Callvirt, toCharArrayMethodRef));
+            worker.Append(worker.Create(OpCodes.Stloc_0));
             worker.Append(worker.Create(OpCodes.Ldc_I4_0));
-            Instruction stLoc1 = worker.Create(OpCodes.Stloc_1);
-            worker.Append(stLoc1);
+            var justBeforeLoop = worker.Create(OpCodes.Stloc_1);
+            worker.Append(justBeforeLoop);
 
-            //We'll insert a br.s here later....
-
-            //Insert another nop and do the rest of our loop
-            Instruction loopNop = worker.Create(OpCodes.Nop);
-            worker.Append(loopNop);
-            worker.Append(worker.Create(OpCodes.Ldloc_0));
+            // Loop start
+            var loopStart = worker.Create(OpCodes.Ldloc_0);
+            worker.Append(loopStart);
             worker.Append(worker.Create(OpCodes.Ldloc_1));
             worker.Append(worker.Create(OpCodes.Ldloc_0));
             worker.Append(worker.Create(OpCodes.Ldloc_1));
@@ -170,34 +153,21 @@ namespace TiviT.NCloak.CloakTasks
             worker.Append(worker.Create(OpCodes.Xor)); //Do the xor
             worker.Append(worker.Create(OpCodes.Conv_U2));
             worker.Append(worker.Create(OpCodes.Stelem_I2)); //Store back in the array
-            worker.Append(worker.Create(OpCodes.Nop));
             worker.Append(worker.Create(OpCodes.Ldloc_1));
             worker.Append(worker.Create(OpCodes.Ldc_I4_1));
             worker.Append(worker.Create(OpCodes.Add));
             worker.Append(worker.Create(OpCodes.Stloc_1));
-            Instruction ldLoc = worker.Create(OpCodes.Ldloc_1);
-            worker.Append(ldLoc);
-            //Link to this line from an earlier statement
-            worker.InsertAfter(stLoc1, worker.Create(OpCodes.Br_S, ldLoc));
+
+            var loop = worker.Create(OpCodes.Ldloc_1);
+            worker.Append(loop);
+            worker.InsertAfter(justBeforeLoop, worker.Create(OpCodes.Br_S, loop));
             worker.Append(worker.Create(OpCodes.Ldloc_0));
             worker.Append(worker.Create(OpCodes.Ldlen));
             worker.Append(worker.Create(OpCodes.Conv_I4));
-            worker.Append(worker.Create(OpCodes.Clt)); //i < array.Length
-            worker.Append(worker.Create(OpCodes.Stloc_3));
-            worker.Append(worker.Create(OpCodes.Ldloc_3));
-            worker.Append(worker.Create(OpCodes.Brtrue_S, loopNop)); //Do the loop
+            worker.Append(worker.Create(OpCodes.Blt_S, loopStart));
 
-            //Return a new string
             worker.Append(worker.Create(OpCodes.Ldloc_0));
-            //Find the constructor we want to use
-            MethodReference constructor = assembly.Import(typeof(string).GetConstructor(new[] { typeof(char[]) }));
-            constructor = body.ImportMethod(constructor);
             worker.Append(worker.Create(OpCodes.Newobj, constructor));
-            Instruction stloc2 = worker.Create(OpCodes.Stloc_2);
-            worker.Append(stloc2);
-            Instruction ldloc2 = worker.Create(OpCodes.Ldloc_2);
-            worker.Append(ldloc2);
-            worker.InsertAfter(stloc2, worker.Create(OpCodes.Br_S, ldloc2));
             worker.Append(worker.Create(OpCodes.Ret));
         }
 

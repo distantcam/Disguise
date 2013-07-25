@@ -18,26 +18,6 @@ namespace TiviT.NCloak
         }
 
         /// <summary>
-        /// Registers the cloaking task in the job pipeline.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void RegisterTask<T>() where T : ICloakTask
-        {
-            ICloakTask task = Activator.CreateInstance<T>();
-            cloakingTasks.Add(task);
-        }
-
-        /// <summary>
-        /// Registers the cloaking task in the job pipeline.
-        /// </summary>
-        /// <param name="task">The task.</param>
-        public void RegisterTask(ICloakTask task)
-        {
-            if (task == null) throw new ArgumentNullException("task");
-            cloakingTasks.Add(task);
-        }
-
-        /// <summary>
         /// Configures the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -46,30 +26,30 @@ namespace TiviT.NCloak
             if (context == null) throw new ArgumentNullException("context");
 
             //Simplify the task
-            RegisterTask<SimplifyTask>();
+            cloakingTasks.Add(new SimplifyTask());
 
             //Encrypt strings before anything else
             if (context.Settings.EncryptStrings)
-                RegisterTask(new StringEncryptionTask(StringEncryptionMethod.Xor));
+                cloakingTasks.Add(new StringEncryptionTask(StringEncryptionMethod.Xor));
 
             //Build up a mapping of the assembly and obfuscate
             if (!context.Settings.NoRename)
             {
-                RegisterTask<MappingTask>();
-                RegisterTask<ObfuscationTask>();
+                cloakingTasks.Add(new MappingTask());
+                cloakingTasks.Add(new ObfuscationTask());
             }
 
             //Supress ILDASM decompilation
             if (context.Settings.SupressIldasm)
-                RegisterTask<SupressIldasmTask>();
+                cloakingTasks.Add(new SupressIldasmTask());
 
             //Try to confuse reflection
             if (context.Settings.ConfuseDecompilationMethod != ConfusionMethod.None)
-                RegisterTask(new ConfuseDecompilationTask(ConfusionMethod.InvalidIl));
+                cloakingTasks.Add(new ConfuseDecompilationTask(ConfusionMethod.InvalidIl));
 
             //Optimize the assembly (turn into short codes where poss)
             if (context.Settings.ConfuseDecompilationMethod == ConfusionMethod.None) //HACK: The new Mono.Cecil doesn't like bad IL codes
-                RegisterTask<OptimizeTask>();
+                cloakingTasks.Add(new OptimizeTask());
 
             ////Always last - output the assembly in the relevant format
             //if (String.IsNullOrEmpty(context.Settings.TamperProofAssemblyName))

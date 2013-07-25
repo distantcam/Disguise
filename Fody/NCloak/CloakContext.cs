@@ -7,7 +7,7 @@ namespace TiviT.NCloak
 {
     public class CloakContext : ICloakContext
     {
-        private readonly ModuleDefinition moduleDefinition;
+        private readonly AssemblyDefinition assemblyDefinition;
         private readonly InitialisationSettings settings;
         private readonly NameManager nameManager;
         private readonly MappingGraph mappingGraph;
@@ -18,17 +18,17 @@ namespace TiviT.NCloak
         /// <param name="settings">The settings.</param>
         public CloakContext(InitialisationSettings settings, ModuleDefinition moduleDefinition)
         {
-            this.moduleDefinition = moduleDefinition;
-            //Check for null
-            if (settings == null) throw new ArgumentNullException("settings");
+            if (settings == null)
+                throw new ArgumentNullException("settings", "settings is null.");
+            if (moduleDefinition == null)
+                throw new ArgumentNullException("moduleDefinition", "moduleDefinition is null.");
 
-            //Finally store them
+            assemblyDefinition = moduleDefinition.Assembly;
+
             this.settings = settings;
 
-            //Create the name manager
             nameManager = new NameManager();
 
-            //Create the mapping graph
             mappingGraph = new MappingGraph();
         }
 
@@ -59,6 +59,6 @@ namespace TiviT.NCloak
             get { return mappingGraph; }
         }
 
-        public AssemblyDefinition AssemblyDefinition { get { return moduleDefinition.Assembly; } }
+        public AssemblyDefinition AssemblyDefinition { get { return assemblyDefinition; } }
     }
 }

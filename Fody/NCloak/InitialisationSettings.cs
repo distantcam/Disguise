@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -63,36 +62,6 @@ namespace TiviT.NCloak
         {
             get { return GetEnum<ConfusionMethod>("ConfuseDecompilationMethod"); }
             set { Set("ConfuseDecompilationMethod", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the name of the tamper proof assembly. Please note, this
-        /// is the .NET friendly name
-        /// </summary>
-        /// <value>The name of the tamper proof assembly.</value>
-        public string TamperProofAssemblyName
-        {
-            get { return GetString("TamperProofAssemblyName"); }
-            set
-            {
-                //Validate it
-                if (String.IsNullOrEmpty(value))
-                    Set("TamperProofAssemblyName", "");
-                else if (Regex.IsMatch(value, "[A-Za-z][_A-Za-z0-9]*"))
-                    Set("TamperProofAssemblyName", value);
-                else
-                    throw new FormatException("Assembly name must be a valid .NET friendly type name ([A-Za-z][_A-Za-z0-9]*)");
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the type of the tamper proof assembly.
-        /// </summary>
-        /// <value>The type of the tamper proof assembly.</value>
-        public AssemblyType TamperProofAssemblyType
-        {
-            get { return GetEnum<AssemblyType>("TamperProofAssemblyType"); }
-            set { Set("TamperProofAssemblyType", value); }
         }
 
         /// <summary>
