@@ -20,16 +20,18 @@
     <Content Include="Fody_ToBeDeleted.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Config\Config.csproj">
+      <Project>{2904adca-a12e-4264-85e6-fb209f3c324c}</Project>
+      <Name>Config</Name>
+      <DestinationSubDirectory>Tools\</DestinationSubDirectory>
+    </ProjectReference>
     <ProjectReference Include="..\Fody\Fody.csproj">
       <Project>{4b08d9a0-6c9e-4e80-afb2-a2068ff6ed11}</Project>
       <Name>Fody</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Tools Include="ConfigureDisguise.psm1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Tools Include="init.ps1" />
+    <Tools Include="edit-disguiseconfig.ps1" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\tools\NuGetBuild.targets" />
 </Project>

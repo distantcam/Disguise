@@ -20,7 +20,7 @@
     <Copy SourceFiles="@(Content)" DestinationFiles="@(Content->'$(OutputPath)Content\%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(Tools)" DestinationFiles="@(Tools->'$(OutputPath)Tools\%(Filename)%(Extension)')" />
 
-    <PepitaPackage.WeavingTask NuGetBuildDirectory="$(OutputPath)" MetadataAssembly="@(_ResolvedProjectReferencePaths)" />
+    <PepitaPackage.WeavingTask NuGetBuildDirectory="$(OutputPath)" MetadataAssembly="%(_ResolvedProjectReferencePaths.Identity)" Condition=" '%(_ResolvedProjectReferencePaths.Name)' == 'Fody' " />
 
   </Target>
 
