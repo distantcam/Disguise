@@ -12,18 +12,11 @@ namespace TiviT.NCloak.CloakTasks
     public class StringEncryptionTask : ICloakTask
     {
         private readonly CloakContext context;
-        private readonly StringEncryptionMethod method;
         private readonly Random random;
 
         public StringEncryptionTask(CloakContext context)
-            : this(context, StringEncryptionMethod.Xor)
-        {
-        }
-
-        public StringEncryptionTask(CloakContext context, StringEncryptionMethod method)
         {
             this.context = context;
-            this.method = method;
             random = new Random();
         }
 
@@ -55,7 +48,7 @@ namespace TiviT.NCloak.CloakTasks
                     md.Body = new MethodBody(md);
 
                     //Output the encryption method body
-                    switch (method)
+                    switch (context.Settings.EncryptStrings)
                     {
                         case StringEncryptionMethod.Xor:
                             GenerateXorDecryptionMethod(context.AssemblyDefinition, md.Body);
@@ -81,7 +74,6 @@ namespace TiviT.NCloak.CloakTasks
                     {
                         if (methodDefinition.HasBody)
                         {
-                            Log.Information("> {0}.{1}.{2}", typeDefinition.Namespace, typeDefinition.Name, methodDefinition.Name);
                             ProcessInstructions(context.AssemblyDefinition, methodDefinition.Body, decryptionMethod);
                         }
                     }
@@ -227,7 +219,7 @@ namespace TiviT.NCloak.CloakTasks
         /// <returns></returns>
         private string EncryptString(string value, int salt)
         {
-            switch (method)
+            switch (context.Settings.EncryptStrings)
             {
                 case StringEncryptionMethod.Xor:
                     return EncryptWithXor(value, salt);

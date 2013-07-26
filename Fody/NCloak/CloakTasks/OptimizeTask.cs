@@ -1,5 +1,4 @@
 ﻿using System;
-using Anotar.Custom;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
 
@@ -32,7 +31,6 @@ namespace TiviT.NCloak.CloakTasks
                     {
                         if (methodDefinition.HasBody)
                         {
-                            Log.Information("> {0}.{1}.{2}", typeDefinition.Namespace, typeDefinition.Name, methodDefinition.Name);
                             methodDefinition.Body.OptimizeMacros();
                         }
                     }

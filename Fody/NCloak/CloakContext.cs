@@ -32,32 +32,15 @@ namespace TiviT.NCloak
             mappingGraph = new MappingGraph();
         }
 
-        /// <summary>
-        /// Gets the settings.
-        /// </summary>
-        /// <value>The settings.</value>
-        public InitialisationSettings Settings
-        {
-            get { return settings; }
-        }
+        public InitialisationSettings Settings { get { return settings; } }
 
         /// <summary>
         /// Gets the name manager used to keep track of unique names for each type.
         /// </summary>
         /// <value>The name manager.</value>
-        public NameManager NameManager
-        {
-            get { return nameManager; }
-        }
+        public NameManager NameManager { get { return nameManager; } }
 
-        /// <summary>
-        /// Gets the mapping graph.
-        /// </summary>
-        /// <value>The mapping graph.</value>
-        public MappingGraph MappingGraph
-        {
-            get { return mappingGraph; }
-        }
+        public MappingGraph MappingGraph { get { return mappingGraph; } }
 
         public AssemblyDefinition AssemblyDefinition { get { return assemblyDefinition; } }
     }

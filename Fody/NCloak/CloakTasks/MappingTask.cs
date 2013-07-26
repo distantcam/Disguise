@@ -17,10 +17,6 @@ namespace TiviT.NCloak.CloakTasks
 
         public void RunTask()
         {
-            //Get out if rename is turned off
-            if (context.Settings.NoRename)
-                return;
-
             //Go through the members and build up a mapping graph
             //If this is done then the members in the graph will be obfuscated, otherwise we'll
             //just obfuscate private members

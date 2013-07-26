@@ -35,16 +35,6 @@ namespace TiviT.NCloak
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the obfuscator should encrypt strings.
-        /// </summary>
-        /// <value><c>true</c> to encrypt strings; otherwise, <c>false</c>.</value>
-        public bool EncryptStrings
-        {
-            get { return GetBool("EncryptStrings"); }
-            set { Set("EncryptStrings", value); }
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether to include the SupressIldasmAttribute on the assembly
         /// </summary>
         /// <value><c>true</c> to include the attribute; otherwise, <c>false</c>.</value>
@@ -64,14 +54,16 @@ namespace TiviT.NCloak
             set { Set("ConfuseDecompilationMethod", value); }
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether rename is switched OFF.
-        /// </summary>
-        /// <value><c>true</c> if rename switched OFF; otherwise, <c>false</c>.</value>
-        public bool NoRename
+        public NamingMethod RenameMethod
         {
-            get { return GetBool("NoRename"); }
-            set { Set("NoRename", value); }
+            get { return GetEnum<NamingMethod>("RenameMethod"); }
+            set { Set("RenameMethod", value); }
+        }
+
+        public StringEncryptionMethod EncryptStrings
+        {
+            get { return GetEnum<StringEncryptionMethod>("EncryptStrings"); }
+            set { Set("EncryptStrings", value); }
         }
 
         private bool GetBool(XName name, bool dfault = false)

@@ -21,14 +21,19 @@ namespace TiviT.NCloak
             cloakingTasks.Add(new SimplifyTask(context));
 
             //Encrypt strings before anything else
-            if (context.Settings.EncryptStrings)
-                cloakingTasks.Add(new StringEncryptionTask(context, StringEncryptionMethod.Xor));
+            if (context.Settings.EncryptStrings != StringEncryptionMethod.None)
+                cloakingTasks.Add(new StringEncryptionTask(context));
 
             //Build up a mapping of the assembly and obfuscate
-            if (!context.Settings.NoRename)
+            if (context.Settings.RenameMethod != NamingMethod.None)
             {
                 cloakingTasks.Add(new MappingTask(context));
                 cloakingTasks.Add(new ObfuscationTask(context));
+            }
+
+            if (context.Settings.RenameMethod == NamingMethod.Readable)
+            {
+                context.NameManager.SetCharacterSet(NameManager.ReadableCharacterSet);
             }
 
             //Supress ILDASM decompilation
@@ -59,7 +64,7 @@ namespace TiviT.NCloak
             //Run through each of our tasks
             foreach (ICloakTask task in cloakingTasks)
             {
-                Log.Information(task.Name);
+                Log.Information("Disguise Task: {0}", task.Name);
                 task.RunTask();
             }
         }

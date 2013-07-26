@@ -53,15 +53,13 @@
     <Compile Include="NCloak\CloakTasks\SimplifyTask.cs" />
     <Compile Include="NCloak\CloakTasks\StringEncryptionTask.cs" />
     <Compile Include="NCloak\CloakTasks\SupressIldasmTask.cs" />
-    <Compile Include="NCloak\ConfusionMethod.cs" />
     <Compile Include="NCloak\InitialisationSettings.cs" />
     <Compile Include="NCloak\Mapping\AssemblyMapping.cs" />
     <Compile Include="NCloak\Mapping\MappingGraph.cs" />
     <Compile Include="NCloak\Mapping\MemberMapping.cs" />
     <Compile Include="NCloak\Mapping\TypeMapping.cs" />
     <Compile Include="NCloak\NameManager.cs" />
-    <Compile Include="NCloak\NamingTable.cs" />
-    <Compile Include="NCloak\StringEncryptionMethod.cs" />
+    <Compile Include="NCloak\Enums.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Anotar.Custom">

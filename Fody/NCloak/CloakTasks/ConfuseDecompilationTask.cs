@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Anotar.Custom;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -58,7 +57,6 @@ namespace TiviT.NCloak.CloakTasks
                 {
                     if (md.HasBody)
                     {
-                        Log.Information("> {0}.{1}.{2}", td.Namespace, td.Name, md.Name);
                         InsertInvalidIl(md.Body);
                     }
                 }

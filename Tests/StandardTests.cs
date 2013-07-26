@@ -11,19 +11,19 @@ public class StandardTests
         [Test]
         public void InfoMessages()
         {
-            ApprovalTests.Approvals.VerifyAll(AssemblyWeaver.Infos.OrderBy(s => s), "Info");
+            ApprovalTests.Approvals.VerifyAll(AssemblyWeaver.Infos, "Info");
         }
 
         [Test]
         public void WarningMessages()
         {
-            ApprovalTests.Approvals.VerifyAll(AssemblyWeaver.Warnings.OrderBy(s => s), "Warning");
+            ApprovalTests.Approvals.VerifyAll(AssemblyWeaver.Warnings, "Warning");
         }
 
         [Test]
         public void ErrorMessages()
         {
-            ApprovalTests.Approvals.VerifyAll(AssemblyWeaver.Errors.OrderBy(s => s), "Error");
+            ApprovalTests.Approvals.VerifyAll(AssemblyWeaver.Errors, "Error");
         }
     }
 

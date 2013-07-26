@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TiviT.NCloak
 {
@@ -8,84 +6,40 @@ namespace TiviT.NCloak
     {
         private readonly char startCharacter;
         private readonly char endCharacter;
+        private readonly char[] baseChars;
 
-        private readonly List<char> characterList;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterSet"/> class.
-        /// </summary>
-        /// <param name="startCharacter">The start character.</param>
-        /// <param name="endCharacter">The end character.</param>
         public CharacterSet(char startCharacter, char endCharacter)
         {
             this.startCharacter = startCharacter;
             this.endCharacter = endCharacter;
-            characterList = new List<char>();
+
+            baseChars = new char[endCharacter - startCharacter + 1];
+            for (int i = 0; i < baseChars.Length; i++)
+                baseChars[i] = (char)(startCharacter + i);
         }
 
-        /// <summary>
-        /// Gets the start character for this set.
-        /// </summary>
-        /// <value>The start character.</value>
-        public char StartCharacter
-        {
-            get { return startCharacter; }
-        }
+        public char StartCharacter { get { return startCharacter; } }
 
-        /// <summary>
-        /// Gets the end character for this set.
-        /// </summary>
-        /// <value>The end character.</value>
-        public char EndCharacter
-        {
-            get { return endCharacter; }
-        }
+        public char EndCharacter { get { return endCharacter; } }
 
-        /// <summary>
-        /// Generates a new name.
-        /// </summary>
-        /// <returns>A unique name based upon the character set settings</returns>
-        public string Generate()
+        public string Generate(int value)
         {
-            //If we're empty then start off the list
-            if (characterList.Count == 0)
+            // 32 is the worst cast buffer size for base 2 and int.MaxValue
+            int i = 32;
+            char[] buffer = new char[i];
+            int targetBase = baseChars.Length;
+
+            do
             {
-                characterList.Add(startCharacter);
-                return startCharacter.ToString();
+                buffer[--i] = baseChars[value % targetBase];
+                value = value / targetBase;
             }
+            while (value > 0);
 
-            //We need to return the character list
-            for (int i = 0; i < characterList.Count; i++)
-            {
-                if (++characterList[i] > endCharacter)
-                {
-                    //We need to overflow - reset this position
-                    characterList[i] = startCharacter;
+            char[] result = new char[32 - i];
+            Array.Copy(buffer, i, result, 0, 32 - i);
 
-                    //Check if we're at the end of the list,
-                    //if so then add an extra character and get out of here
-                    if (i == characterList.Count - 1)
-                    {
-                        characterList.Add(startCharacter);
-                        break;
-                    }
-                }
-                else
-                {
-                    //We're inside our range so we can get out of here
-                    break;
-                }
-            }
-
-            //Send back our sequence
-            //If we've only got a 1 character sequence then don't use a StringBuilder!
-            if (characterList.Count == 1)
-                return characterList[0].ToString();
-            //Build the string backwards
-            StringBuilder sequence = new StringBuilder();
-            for (int i = characterList.Count - 1; i >= 0; i--)
-                sequence.Append(characterList[i]);
-            return sequence.ToString();
+            return new string(result);
         }
     }
 }

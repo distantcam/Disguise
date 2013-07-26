@@ -44,7 +44,7 @@ public static class AssemblyWeaver
             LogWarning = LogWarning,
             LogError = LogError,
             DefineConstants = new[] { "DEBUG" }, // Always testing the debug weaver
-            Config = XElement.Parse("<Disguise EncryptStrings=\"true\" />")
+            Config = XElement.Parse("<Disguise EncryptStrings=\"Xor\" RenameMethod=\"Readable\" />")
         };
 
         weavingTask.Execute();
