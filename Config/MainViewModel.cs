@@ -21,7 +21,7 @@ namespace Config
                 App.FodyWeaveFile.Element("Weavers").Add(disguiseNode);
             }
 
-            var settings = new InitialisationSettings(disguiseNode);
+            var settings = new DisguiseConfig(disguiseNode);
             ObfuscateAllModifiers = settings.ObfuscateAllModifiers;
             SupressIldasm = settings.SupressIldasm;
             ConfuseDecompilationMethod = settings.ConfuseDecompilationMethod;
@@ -41,7 +41,7 @@ namespace Config
 
         public void Save()
         {
-            var settings = new InitialisationSettings(App.FodyWeaveFile.Descendants("Disguise").First());
+            var settings = new DisguiseConfig(App.FodyWeaveFile.Descendants("Disguise").First());
             settings.ObfuscateAllModifiers = ObfuscateAllModifiers;
             settings.SupressIldasm = SupressIldasm;
             settings.ConfuseDecompilationMethod = ConfuseDecompilationMethod;

@@ -1,12 +1,1 @@
-﻿Info[0] = Disguise Task: Simplifying methods
-Info[1] = Disguise Task: Encrypting strings
-Info[2] = Generating global decrypt method
-Info[3] = Processing modules
-Info[4] = Encrypting string "I spy with my little eye, something beginning with S."
-Info[5] = Encrypting string "I am the law!"
-Info[6] = Encrypting string "If you build it, they will come."
-Info[7] = Encrypting string "HISSSSSSSSSSS!"
-Info[8] = Disguise Task: Creating call map
-Info[9] = Disguise Task: Obfuscating members
-Info[10] = Disguise Task: Inserting anti-ILDASM code
-Info[11] = Disguise Task: Optimizing methods
+﻿Info is empty

@@ -75,16 +75,4 @@ public class Logger
     }
 
     public bool IsErrorEnabled { get { return LoggerFactory.LogError != null; } }
-
-    public void Fatal(string format, params object[] args)
-    {
-        throw new NotSupportedException();
-    }
-
-    public void Fatal(Exception exception, string format, params object[] args)
-    {
-        throw new NotSupportedException();
-    }
-
-    public bool IsFatalEnabled { get { return false; } }
 }

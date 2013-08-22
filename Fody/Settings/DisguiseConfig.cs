@@ -4,19 +4,19 @@ using System.Xml.Linq;
 
 namespace Disguise.Settings
 {
-    public class InitialisationSettings
+    public class DisguiseConfig
     {
         private readonly XElement xml;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InitialisationSettings"/> class.
         /// </summary>
-        public InitialisationSettings()
+        public DisguiseConfig()
         {
             xml = new XElement("Disguise");
         }
 
-        public InitialisationSettings(XElement config)
+        public DisguiseConfig(XElement config)
         {
             xml = config ?? new XElement("Disguise");
         }

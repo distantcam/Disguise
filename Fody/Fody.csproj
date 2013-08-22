@@ -11,7 +11,7 @@
     <AssemblyName>Disguise.Fody</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <FodyPath>..\packages\Fody.1.13.12</FodyPath>
+    <FodyPath>..\packages\Fody.1.14.0</FodyPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,15 +39,19 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CecilCloningChamber.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
-    <Compile Include="Settings\InitialisationSettings.cs" />
+    <Compile Include="Settings\DisguiseConfig.cs" />
     <Compile Include="Settings\Enums.cs" />
+    <Compile Include="Tasks\BaseTask.cs" />
+    <Compile Include="Tasks\EncryptionTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Anotar.Custom">
-      <HintPath>..\packages\Anotar.Custom.Fody.2.0.6\Lib\portable-net4+sl4+wp7\Anotar.Custom.dll</HintPath>
+      <HintPath>..\packages\Anotar.Custom.Fody.2.3.0.0\Lib\portable-net4+sl4+wp7\Anotar.Custom.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Cecil">

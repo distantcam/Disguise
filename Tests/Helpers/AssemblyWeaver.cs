@@ -39,11 +39,9 @@ public static class AssemblyWeaver
         var weavingTask = new ModuleWeaver
         {
             ModuleDefinition = moduleDefinition,
-            AssemblyResolver = assemblyResolver,
             LogInfo = LogInfo,
             LogWarning = LogWarning,
             LogError = LogError,
-            DefineConstants = new[] { "DEBUG" }, // Always testing the debug weaver
             Config = XElement.Parse("<Disguise EncryptStrings=\"Xor\" RenameMethod=\"Readable\" />")
         };
 

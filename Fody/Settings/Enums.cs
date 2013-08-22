@@ -26,4 +26,13 @@
         None,
         Xor
     }
+
+    public enum DisguiseLevel
+    {
+        None,
+        Basic,
+        Normal,
+        Aggressive,
+        Custom
+    }
 }
