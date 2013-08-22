@@ -40,27 +40,10 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CecilExtensions.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ModuleWeaver.cs" />
-    <Compile Include="NCloak\CharacterSet.cs" />
-    <Compile Include="NCloak\CloakContext.cs" />
-    <Compile Include="NCloak\CloakManager.cs" />
-    <Compile Include="NCloak\CloakTasks\ConfuseDecompilationTask.cs" />
-    <Compile Include="NCloak\CloakTasks\ICloakTask.cs" />
-    <Compile Include="NCloak\CloakTasks\MappingTask.cs" />
-    <Compile Include="NCloak\CloakTasks\ObfuscationTask.cs" />
-    <Compile Include="NCloak\CloakTasks\OptimizeTask.cs" />
-    <Compile Include="NCloak\CloakTasks\SimplifyTask.cs" />
-    <Compile Include="NCloak\CloakTasks\StringEncryptionTask.cs" />
-    <Compile Include="NCloak\CloakTasks\SupressIldasmTask.cs" />
-    <Compile Include="NCloak\InitialisationSettings.cs" />
-    <Compile Include="NCloak\Mapping\AssemblyMapping.cs" />
-    <Compile Include="NCloak\Mapping\MappingGraph.cs" />
-    <Compile Include="NCloak\Mapping\MemberMapping.cs" />
-    <Compile Include="NCloak\Mapping\TypeMapping.cs" />
-    <Compile Include="NCloak\NameManager.cs" />
-    <Compile Include="NCloak\Enums.cs" />
+    <Compile Include="Settings\InitialisationSettings.cs" />
+    <Compile Include="Settings\Enums.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Anotar.Custom">

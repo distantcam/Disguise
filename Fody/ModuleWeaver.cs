@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
+using Disguise.Settings;
 using Mono.Cecil;
-using TiviT.NCloak;
 
 public class ModuleWeaver
 {
@@ -30,11 +30,5 @@ public class ModuleWeaver
         LoggerFactory.LogError = LogError;
 
         var settings = new InitialisationSettings(Config);
-
-        var manager = new CloakManager();
-
-        var cloakContext = new CloakContext(settings, ModuleDefinition);
-
-        manager.Run(cloakContext);
     }
 }

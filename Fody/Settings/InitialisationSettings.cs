@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Linq;
 
-namespace TiviT.NCloak
+namespace Disguise.Settings
 {
     public class InitialisationSettings
     {

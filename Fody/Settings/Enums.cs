@@ -1,4 +1,4 @@
-﻿namespace TiviT.NCloak
+﻿namespace Disguise.Settings
 {
     public enum ConfusionMethod
     {

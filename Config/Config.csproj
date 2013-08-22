@@ -65,10 +65,10 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Fody\NCloak\Enums.cs">
+    <Compile Include="..\Fody\Settings\Enums.cs">
       <Link>Enums.cs</Link>
     </Compile>
-    <Compile Include="..\Fody\NCloak\InitialisationSettings.cs">
+    <Compile Include="..\Fody\Settings\InitialisationSettings.cs">
       <Link>InitialisationSettings.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">
